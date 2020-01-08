@@ -8,9 +8,11 @@ const resetButton = document.getElementById('reset');
 const clearButton = document.getElementById('clear');
 
 let dragok = false;
-let lastPos = {
-    x: 0,
-    y: 0
+let lastMove = {
+    fromX: 0,
+    fromY: 0,
+    toX: 0,
+    toY: 0
 };
 
 const WPIcon = new Image(),
@@ -113,7 +115,8 @@ function render() {
 
 function mouseDown(x, y) {
     modelCoords = viewToModel(x, y);
-    lastPos = modelCoords;
+    lastMove.fromX = modelCoords.x;
+    lastMove.fromY = modelCoords.y;
 
     dragok = true;
     canvas.onmousemove = mouseMove;
@@ -128,7 +131,7 @@ function mouseMove(){
         y = event.pageY - canvas.offsetTop - BLOCK_W / 2; 
 
         render();
-        renderSquare(lastPos.x, lastPos.y);
+        renderSquare(lastMove.fromX, lastMove.fromY);
         ctx.drawImage(lastIcon, x, y, BLOCK_W, BLOCK_H);
     }
 }
@@ -138,7 +141,10 @@ function mouseUp(x, y) {
     canvas.onmousemove = null;
 
     const modelCoords = viewToModel(x, y);
+    lastMove.toX = modelCoords.x;
+    lastMove.toY = modelCoords.y;
 
+    movePiece(lastMove.fromX, lastMove.fromY, lastMove.toX, lastMove.toY);
     render();
 }
 

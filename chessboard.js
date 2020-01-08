@@ -16,29 +16,12 @@ const BP = {color: "black", piece: "pawn"},
 const EM = {color: "empty", piece: "empty"};
 
 let turn = "white";
-
-let clicks = 0;
-let lastClick = {
-    x: 0,
-    y: 0
-};
-
 let board = [];
 
 function inBounds(x, y) {
     return x >= 0 && y >= 0
         && x < COLS && y < ROWS;
 }
-
-
-// function threatenedSquares(x, y) {
-//     if (board[y][x] != EM) {
-//         switch(board[y][x].piece) {
-//             case "pawn":
-//                 if ()
-//         }
-//     }
-// }
 
 function resetPosition() {
     init();
@@ -54,14 +37,6 @@ function clearPosition() {
 
     render();
 }
-
-// function pawnIsInStartingPosition(x, y) {
-//     if(board[y][x].color == "white") {
-//         return y == 6;
-//     } else {
-//         return y == 1;
-//     }
-// }
 
 function canShortCastle(fromX, fromY, toX, toY) {
     if (board[fromY][fromX].color == "white"){
@@ -81,9 +56,6 @@ function canLongCastle(fromX, fromY, toX, toY) {
 
 function legalMove(fromX, fromY, toX, toY) {
     let isLegal = false;
-
-    console.log(fromX, fromY)
-    console.log(toX, toY)
 
     if (turn == board[fromY][fromX].color && (fromX != toX || fromY != toY) && (board[fromY][fromX].color != board[toY][toX].color)) {
         switch(board[fromY][fromX].piece) {
@@ -125,27 +97,18 @@ function legalMove(fromX, fromY, toX, toY) {
     return isLegal;
 }
 
-function movePiece(x, y) {
-    modelCoords = viewToModel(x, y);
-    
-    if (clicks == 1) {
-        if (legalMove(lastClick.x, lastClick.y, modelCoords.x, modelCoords.y)){
-            board[modelCoords.y][modelCoords.x] = board[lastClick.y][lastClick.x];
-            board[lastClick.y][lastClick.x] = EM;
-            
-            if (turn == "white") {
-                turn = "black";
-            } else {
-                turn = "white";
-            }
+function movePiece(fromX, fromY, toX, toY) {
+    if(legalMove(fromX, fromY, toX, toY)) {
+        board[toY][toX] = board[fromY][fromX];
+        board[fromY][fromX] = EM;
+        
+        if (turn == "white") {
+            turn = "black";
         } else {
-
+            turn = "white";
         }
-    } else {
-        lastClick = modelCoords;
     }
     
-    clicks = (clicks + 1) % 2;
     render();
 }
 

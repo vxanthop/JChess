@@ -4,7 +4,6 @@ canvas.addEventListener('mousedown', (e) => {
     const y = e.clientY - rect.top;
     
     mouseDown(x, y)
-    movePiece(x, y)
 });
 
 
@@ -14,5 +13,4 @@ canvas.addEventListener('mouseup', (e) => {
     const y = e.clientY - rect.top;
     
     mouseUp(x, y)
-    movePiece(x, y)
 });
