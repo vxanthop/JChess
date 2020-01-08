@@ -7,18 +7,27 @@ const ctx = canvas.getContext('2d');
 const resetButton = document.getElementById('reset');
 const clearButton = document.getElementById('clear');
 
+let lastPiece = EM, lastIcon;
+let dragok = false;
+let lastMove = {
+    fromX: 0,
+    fromY: 0,
+    toX: 0,
+    toY: 0 
+};
+
 const WPIcon = new Image(),
-      BPIcon = new Image(),
-      WNIcon = new Image(),
-      BNIcon = new Image(),
-      WBIcon = new Image(),
-      BBIcon = new Image(),
-      WQIcon = new Image(),
-      BQIcon = new Image(),
-      WKIcon = new Image(),
-      BKIcon = new Image(),
-      WRIcon = new Image(),
-      BRIcon = new Image();
+BPIcon = new Image(),
+WNIcon = new Image(),
+BNIcon = new Image(),
+WBIcon = new Image(),
+BBIcon = new Image(),
+WQIcon = new Image(),
+BQIcon = new Image(),
+WKIcon = new Image(),
+BKIcon = new Image(),
+WRIcon = new Image(),
+BRIcon = new Image();
 
 WPIcon.src = 'images/Chess_plt45.svg';
 BPIcon.src = 'images/Chess_pdt45.svg';
@@ -33,6 +42,20 @@ BKIcon.src = 'images/Chess_kdt45.svg';
 WRIcon.src = 'images/Chess_rlt45.svg';
 BRIcon.src = 'images/Chess_rdt45.svg';
 
+const iconSelector = {
+    "whitepawn": WPIcon,
+    "whiterook": WRIcon,
+    "whiteknight": WNIcon,
+    "whitebishop": WBIcon,
+    "whitequeen": WQIcon,
+    "whiteking": WKIcon,
+    "blackpawn": BPIcon,
+    "blackrook": BRIcon,
+    "blackknight": BNIcon,
+    "blackbishop": BBIcon,
+    "blackqueen": BQIcon,
+    "blackking": BKIcon
+};
 
 function modelToView(x, y) {
     return {
@@ -48,48 +71,15 @@ function viewToModel(x, y) {
     };
 }
 
+
+function selectIcon(x, y) {
+    return iconSelector[board[y][x].color + board[y][x].piece];
+}
+
 function renderPiece(x, y) {
     let viewCoords = modelToView(x, y);
-
-    switch(board[y][x]) {
-        case WP:
-            pieceIcon = WPIcon;
-            break;
-        case WR:
-            pieceIcon = WRIcon;
-            break;
-        case WN:
-            pieceIcon = WNIcon;
-            break;
-        case WB:
-            pieceIcon = WBIcon;
-            break;
-        case WQ:
-            pieceIcon = WQIcon;
-            break;
-        case WK:
-            pieceIcon = WKIcon;
-            break;
-        case BP:
-            pieceIcon = BPIcon;
-            break;
-        case BR:
-            pieceIcon = BRIcon;
-            break;
-        case BN:
-            pieceIcon = BNIcon;
-            break;
-        case BB:
-            pieceIcon = BBIcon;
-            break;
-        case BQ:
-            pieceIcon = BQIcon;
-            break;
-        case BK:
-            pieceIcon = BKIcon;
-            break;
-    }
-
+    
+    pieceIcon = selectIcon(x, y);
     ctx.drawImage(pieceIcon, viewCoords.x, viewCoords.y, BLOCK_W, BLOCK_H);
 }
 
@@ -118,6 +108,39 @@ function render() {
         }
     }
 }
+
+function mouseDown(x, y) {
+    modelCoords = viewToModel(x, y);
+
+    dragok = true;
+    canvas.onmousemove = mouseMove;
+
+    lastPiece = board[modelCoords.y][modelCoords.x];
+    lastIcon = selectIcon(modelCoords.x, modelCoords.y);
+    board[modelCoords.y][modelCoords.x] = EM;
+}
+
+
+function mouseMove(){
+    if (dragok){
+        x = event.pageX - canvas.offsetLeft - BLOCK_H / 2; 
+        y = event.pageY - canvas.offsetTop - BLOCK_W / 2; 
+
+        render();
+        ctx.drawImage(lastIcon, x, y, BLOCK_W, BLOCK_H);
+    }
+}
+
+function mouseUp(x, y) {
+    dragok = false;
+    canvas.onmousemove = null;
+
+    const modelCoords = viewToModel(x, y);
+
+    board[modelCoords.y][modelCoords.x] = lastPiece;
+    render();
+}
+
 
 BRIcon.onload = function () {
     render();
