@@ -7,13 +7,10 @@ const ctx = canvas.getContext('2d');
 const resetButton = document.getElementById('reset');
 const clearButton = document.getElementById('clear');
 
-let lastPiece = EM, lastIcon;
 let dragok = false;
-let lastMove = {
-    fromX: 0,
-    fromY: 0,
-    toX: 0,
-    toY: 0 
+let lastPos = {
+    x: 0,
+    y: 0
 };
 
 const WPIcon = new Image(),
@@ -83,7 +80,7 @@ function renderPiece(x, y) {
     ctx.drawImage(pieceIcon, viewCoords.x, viewCoords.y, BLOCK_W, BLOCK_H);
 }
 
-function renderBlock(x, y) {
+function renderSquare(x, y) {
     viewCoords = modelToView(x, y);
 
     ctx.strokeStyle = 'black';
@@ -95,6 +92,11 @@ function renderBlock(x, y) {
 
     ctx.fillRect(viewCoords.x, viewCoords.y, BLOCK_W, BLOCK_H);
     ctx.strokeRect(viewCoords.x, viewCoords.y, BLOCK_W, BLOCK_H);
+}
+
+
+function renderBlock(x, y) {
+    renderSquare(x, y);
 
     if(board[y][x] != EM) {
         renderPiece(x, y);
@@ -111,13 +113,12 @@ function render() {
 
 function mouseDown(x, y) {
     modelCoords = viewToModel(x, y);
+    lastPos = modelCoords;
 
     dragok = true;
     canvas.onmousemove = mouseMove;
 
-    lastPiece = board[modelCoords.y][modelCoords.x];
     lastIcon = selectIcon(modelCoords.x, modelCoords.y);
-    board[modelCoords.y][modelCoords.x] = EM;
 }
 
 
@@ -127,6 +128,7 @@ function mouseMove(){
         y = event.pageY - canvas.offsetTop - BLOCK_W / 2; 
 
         render();
+        renderSquare(lastPos.x, lastPos.y);
         ctx.drawImage(lastIcon, x, y, BLOCK_W, BLOCK_H);
     }
 }
@@ -137,7 +139,6 @@ function mouseUp(x, y) {
 
     const modelCoords = viewToModel(x, y);
 
-    board[modelCoords.y][modelCoords.x] = lastPiece;
     render();
 }
 
