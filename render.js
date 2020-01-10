@@ -8,7 +8,7 @@ const resetButton = document.getElementById('reset');
 const clearButton = document.getElementById('clear');
 
 let dragok = false;
-let lastMove = {
+let currentMove = {
     fromX: 0,
     fromY: 0,
     toX: 0,
@@ -115,8 +115,8 @@ function render() {
 
 function mouseDown(x, y) {
     modelCoords = viewToModel(x, y);
-    lastMove.fromX = modelCoords.x;
-    lastMove.fromY = modelCoords.y;
+    currentMove.fromX = modelCoords.x;
+    currentMove.fromY = modelCoords.y;
 
     dragok = true;
     canvas.onmousemove = mouseMove;
@@ -131,7 +131,7 @@ function mouseMove(){
         y = event.pageY - canvas.offsetTop - BLOCK_W / 2; 
 
         render();
-        renderSquare(lastMove.fromX, lastMove.fromY);
+        renderSquare(currentMove.fromX, currentMove.fromY);
         ctx.drawImage(lastIcon, x, y, BLOCK_W, BLOCK_H);
     }
 }
@@ -141,10 +141,10 @@ function mouseUp(x, y) {
     canvas.onmousemove = null;
 
     const modelCoords = viewToModel(x, y);
-    lastMove.toX = modelCoords.x;
-    lastMove.toY = modelCoords.y;
+    currentMove.toX = modelCoords.x;
+    currentMove.toY = modelCoords.y;
 
-    movePiece(lastMove.fromX, lastMove.fromY, lastMove.toX, lastMove.toY);
+    movePiece(currentMove.fromX, currentMove.fromY, currentMove.toX, currentMove.toY);
     render();
 }
 

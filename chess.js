@@ -19,6 +19,15 @@ let turn = "white";
 let board = [];
 let whiteHasCastled = false, blackHasCastled = false;
 let whiteKingMoved = false, blackKingMoved = false; 
+let isEnPassant = false;
+let lastMove = {
+    fromX: 0,
+    fromY: 0,
+    toX: 0,
+    toY: 0,
+    piece: '',
+    color: '' 
+}
 
 function inBounds(x, y) {
     return x >= 0 && y >= 0
@@ -61,8 +70,19 @@ function commitMove(fromX, fromY, toX, toY) {
             board[0][3] = BR;
             blackHasCastled = true;
         }
+    } else if(isEnPassant) {
+        board[lastMove.toY][lastMove.toX] = EM;
+        isEnPassant = false;
     }
 
+    
+    lastMove.fromX = fromX;
+    lastMove.fromY = fromY;
+    lastMove.toX = toX;
+    lastMove.toY = toY;
+    lastMove.piece = board[fromY][fromX].piece;
+    lastMove.color = board[fromY][fromX].color;
+    
     board[toY][toX] = board[fromY][fromX];
     board[fromY][fromX] = EM;
 }
@@ -147,6 +167,34 @@ function isKingMove(fromX, fromY, toX, toY) {
     return false;
 }
 
+function isPawnMove(fromX, fromY, toX, toY, color) {
+    if(board[toY][toX] == EM){
+        if(color == "white") {
+            if((fromX == toX) && (fromY == toY + 1) || ((fromY == toY + 2) && (fromX == toX) && fromY == 6)) {
+                return true;
+            } else if(lastMove.piece == 'pawn' && lastMove.color == 'black' && Math.abs(lastMove.fromY - lastMove.toY) == 2 && lastMove.toX == toX && lastMove.toY == toY + 1) {
+                isEnPassant = true;
+                return true;
+            }
+        } else {
+            if((fromX == toX) && (fromY == toY - 1) || ((fromY == toY - 2) && (fromX == toX) && fromY == 1)) {
+                return true;
+            } else if (lastMove.piece == 'pawn' && lastMove.color == 'white' && Math.abs(lastMove.fromY - lastMove.toY) == 2 && lastMove.toX == toX && lastMove.toY == toY - 1) {
+                isEnPassant = true;
+                return true;
+            }
+        }
+    } else {
+        if(board[toY][toX].color != color) {
+            if(color == "white") {           
+                return (fromY == toY + 1) && (Math.abs(fromX - toX) == 1)
+            } else {
+                return (fromY == toY - 1) && (Math.abs(fromX - toX) == 1)
+            }
+        }
+    }
+}
+
 function isShortCastle(fromX, fromY, toX, toY) {
     if (board[fromY][fromX].color == "white"){
         return !whiteKingMoved && !whiteHasCastled && fromX == 4 && fromY == 7 && toX == 6 && toY == 7 && board[7][7].piece == "rook";
@@ -169,21 +217,7 @@ function legalMove(fromX, fromY, toX, toY, piece, color) {
     if(isInTurn(color) && isMoving(fromX, fromY, toX, toY)) {
         switch(piece) {
             case "pawn":
-                if(board[toY][toX] == EM){
-                    if(color == "white") {
-                        isLegal = (fromX == toX) && (fromY == toY + 1) || ((fromY == toY + 2) && (fromX == toX) && fromY == 6);
-                    } else {
-                        isLegal = (fromX == toX) && (fromY == toY - 1) || ((fromY == toY - 2) && (fromX == toX) && fromY == 1);
-                    }
-                } else {
-                    if(board[toY][toX].color != color) {
-                        if(color == "white") {           
-                            isLegal = (fromY == toY + 1) && (Math.abs(fromX - toX) == 1)
-                        } else {
-                            isLegal = (fromY == toY - 1) && (Math.abs(fromX - toX) == 1)
-                        }
-                    }
-                }
+                isLegal = isPawnMove(fromX, fromY, toX, toY, color) && !isBlocked(fromX, fromY, toX, toY, piece, color, 'horizontal');
                 break;
             case "bishop":
                 isLegal = isDiagonalMove(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, piece, color, 'diagonal');
@@ -238,6 +272,16 @@ function init() {
     turn = "white";
     whiteHasCastled = false;
     blackHasCastled = false;
+    whiteKingMoved = false;
+    blackKingMoved = false;
+    lastMove = {
+        fromX: 0,
+        fromY: 0,
+        toX: 0,
+        toY: 0,
+        piece: '',
+        color: '' 
+    }
 }
 
 init();
