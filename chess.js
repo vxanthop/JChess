@@ -20,6 +20,7 @@ let board = [];
 let whiteHasCastled = false, blackHasCastled = false;
 let whiteKingMoved = false, blackKingMoved = false; 
 let isEnPassant = false;
+let isPromotion = false;
 let lastMove = {
     fromX: 0,
     fromY: 0,
@@ -74,7 +75,6 @@ function commitMove(fromX, fromY, toX, toY) {
         board[lastMove.toY][lastMove.toX] = EM;
         isEnPassant = false;
     }
-
     
     lastMove.fromX = fromX;
     lastMove.fromY = fromY;
@@ -83,7 +83,13 @@ function commitMove(fromX, fromY, toX, toY) {
     lastMove.piece = board[fromY][fromX].piece;
     lastMove.color = board[fromY][fromX].color;
     
-    board[toY][toX] = board[fromY][fromX];
+    if(isPromotion) {
+        selection = renderPromotionMenu(toX, toY);
+        board[toY][toX] = {color: board[fromY][fromX].color, piece: selection};
+        isPromotion = false;
+    } else {
+        board[toY][toX] = board[fromY][fromX];
+    }
     board[fromY][fromX] = EM;
 }
 
@@ -171,6 +177,9 @@ function isPawnMove(fromX, fromY, toX, toY, color) {
     if(board[toY][toX] == EM){
         if(color == "white") {
             if((fromX == toX) && (fromY == toY + 1) || ((fromY == toY + 2) && (fromX == toX) && fromY == 6)) {
+                if(toY == 0) {
+                    isPromotion = true;
+                }
                 return true;
             } else if(lastMove.piece == 'pawn' && lastMove.color == 'black' && Math.abs(lastMove.fromY - lastMove.toY) == 2 && lastMove.toX == toX && lastMove.toY == toY + 1) {
                 isEnPassant = true;
@@ -178,6 +187,9 @@ function isPawnMove(fromX, fromY, toX, toY, color) {
             }
         } else {
             if((fromX == toX) && (fromY == toY - 1) || ((fromY == toY - 2) && (fromX == toX) && fromY == 1)) {
+                if(toY == 7) {
+                    isPromotion = true;
+                }
                 return true;
             } else if (lastMove.piece == 'pawn' && lastMove.color == 'white' && Math.abs(lastMove.fromY - lastMove.toY) == 2 && lastMove.toX == toX && lastMove.toY == toY - 1) {
                 isEnPassant = true;
@@ -186,11 +198,23 @@ function isPawnMove(fromX, fromY, toX, toY, color) {
         }
     } else {
         if(board[toY][toX].color != color) {
-            if(color == "white") {           
-                return (fromY == toY + 1) && (Math.abs(fromX - toX) == 1)
+            if(color == "white") {    
+                if((fromY == toY + 1) && (Math.abs(fromX - toX) == 1)) {
+                    if(toY == 0) {
+                        isPromotion = true;
+                    }       
+                    return true;
+                }
             } else {
-                return (fromY == toY - 1) && (Math.abs(fromX - toX) == 1)
+                if((fromY == toY - 1) && (Math.abs(fromX - toX) == 1)) {
+                    if(toY == 7) {
+                        isPromotion = true;
+                    }
+                    return true;
+                }
             }
+
+            return false;
         }
     }
 }

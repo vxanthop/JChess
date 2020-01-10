@@ -70,9 +70,17 @@ function viewToModel(x, y) {
     };
 }
 
-
 function selectIcon(x, y) {
     return iconSelector[board[y][x].color + board[y][x].piece];
+}
+
+function renderPromotionMenu(x, y) {
+    let piece = 'pawn'
+    while(piece == 'pawn' || piece == 'king'){
+        piece = prompt("Enter the piece you wish to promote to", "queen");
+    }
+
+    return piece;
 }
 
 function renderPiece(x, y) {
@@ -102,14 +110,6 @@ function renderBlock(x, y) {
 
     if(board[y][x] != EM) {
         renderPiece(x, y);
-    }
-}
-
-function render() {
-    for (let y = 0; y < ROWS; y++) {
-        for (let x = 0; x < COLS; x++) {
-            renderBlock(x, y);
-        }
     }
 }
 
@@ -148,6 +148,13 @@ function mouseUp(x, y) {
     render();
 }
 
+function render() {
+    for (let y = 0; y < ROWS; y++) {
+        for (let x = 0; x < COLS; x++) {
+            renderBlock(x, y);
+        }
+    }
+}
 
 BRIcon.onload = function () {
     render();
