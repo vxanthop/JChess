@@ -173,6 +173,171 @@ function isKingMove(fromX, fromY, toX, toY) {
     return false;
 }
 
+function inCheckDiagonal(kingX, kingY) {
+    let kingColor = board[kingY][kingX].color;
+    let tempX, tempY, dx, dy;
+
+    dx = 1, dy = 1;
+    tempX = kingX, tempY = kingY;
+    for(let i = 0; i < min(Math.abs(8 - kingX), Math.abs(8 - kingY)); ++i) {
+        c = board[kingY][tempX].color;
+        p = board[kingY][tempX].piece;
+        if(p != 'empty') {
+            if(c != kingColor) {
+                if(p == 'bishop' || p == 'queen') 
+                    return true;
+                else if(p == 'king' && Math.abs(kingX - tempX) == 1 && Math.abs(kingY - tempY) == 1) 
+                    return true;
+                else
+                    return false;
+            } else {
+                break;
+            }
+        }
+    }
+
+    dx = 1, dy = -1;
+    tempX = kingX, tempY = kingY;
+    for(let i = 0; i < min(Math.abs(8 - kingX), Math.abs(0 - kingY)); ++i) {
+        c = board[kingY][tempX].color;
+        p = board[kingY][tempX].piece;
+        if(p != 'empty') {
+            if(c != kingColor) {
+                if(p == 'bishop' || p == 'queen') 
+                    return true;
+                else if(p == 'king' && Math.abs(kingX - tempX) == 1 && Math.abs(kingY - tempY) == 1) 
+                    return true;
+                else
+                    return false;
+            } else {
+                break;
+            }
+        }
+    }
+
+    dx = -1, dy = 1;
+    tempX = kingX, tempY = kingY;
+    for(let i = 0; i < min(Math.abs(0 - kingX), Math.abs(8 - kingY)); ++i) {
+        c = board[tempY][kingX].color;
+        p = board[tempY][kingX].piece;
+        tempX += dx;
+        tempY += dy;
+        if(p != 'empty') {
+            if(c != kingColor) {
+                if(p == 'bishop' || p == 'queen') 
+                    return true;
+                else if(p == 'king' && Math.abs(kingY - tempY) == 1 && Math.abs(kingX - tempX) == 1) 
+                    return true;
+                else
+                    return false;
+            } else {
+                break;
+            }
+        }
+    }
+
+    dx = -1, dy = -1;
+    tempX = kingX, tempY = kingY;
+    for(let i = 0; i < min(Math.abs(0 - kingX), Math.abs(0 - kingY)); ++i) {
+        c = board[tempY][kingX].color;
+        p = board[tempY][kingX].piece;
+        tempX += dx;
+        tempY += dy;
+        if(p != 'empty') {
+            if(c != kingColor) {
+                if(p == 'bishop' || p == 'queen') 
+                    return true;
+                else if(p == 'king' && Math.abs(kingY - tempY) == 1 && Math.abs(kingX - tempX) == 1) 
+                    return true;
+                else
+                    return false;
+            } else {
+                break;
+            }
+        }
+    }
+}
+
+function inCheckHorizontal(kingX, kingY) {
+    let kingColor = board[kingY][kingX].color;
+
+    for(let tempX = kingX + 1; tempX < 8; ++tempX) {
+        c = board[kingY][tempX].color;
+        p = board[kingY][tempX].piece;
+        if(p != 'empty') {
+            if(c != kingColor) {
+                if(p == 'rook' || p == 'queen') 
+                    return true;
+                else if(p == 'king' && Math.abs(kingX - tempX) == 1) 
+                    return true;
+                else
+                    return false;
+            } else {
+                break;
+            }
+        }
+    }
+
+    for(let tempX = kingX - 1; tempX >= 0; --tempX) {
+        c = board[kingY][tempX].color;
+        p = board[kingY][tempX].piece;
+        if(p != 'empty') {
+            if(c != kingColor) {
+                if(p == 'rook' || p == 'queen') 
+                    return true;
+                else if(p == 'king' && Math.abs(kingX - tempX) == 1) 
+                    return true;
+                else
+                    return false;
+            } else {
+                break;
+            }
+        }
+    }
+
+    for(let tempY = kingY + 1; tempY < 8; ++tempY) {
+        c = board[tempY][kingX].color;
+        p = board[tempY][kingX].piece;
+        if(p != 'empty') {
+            if(c != kingColor) {
+                if(p == 'rook' || p == 'queen') 
+                    return true;
+                else if(p == 'king' && Math.abs(kingY - tempY) == 1) 
+                    return true;
+                else
+                    return false;
+            } else {
+                break;
+            }
+        }
+    }
+
+    for(let tempY = kingY - 1; tempY >= 0; --tempY) {
+        c = board[tempY][kingX].color;
+        p = board[tempY][kingX].piece;
+        if(p != 'empty') {
+            if(c != kingColor) {
+                if(p == 'rook' || p == 'queen') 
+                    return true;
+                else if(p == 'king' && Math.abs(kingY - tempY) == 1) 
+                    return true;
+                else
+                    return false;
+            } else {
+                break;
+            }
+        }
+    }
+}
+
+
+function inCheck(kingX, kingY) {
+    return inCheckHorizontal(kingX, kingY) || 
+           inCheckDiagonal(kingX, kingY) ||
+           inCheckKnight(kingX, kingY) ||
+           inCheckPawn(kingX, kingY);
+}
+
 function isPawnMove(fromX, fromY, toX, toY, color) {
     if(board[toY][toX] == EM){
         if(color == "white") {
