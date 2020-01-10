@@ -21,6 +21,14 @@ let whiteHasCastled = false, blackHasCastled = false;
 let whiteKingMoved = false, blackKingMoved = false; 
 let isEnPassant = false;
 let isPromotion = false;
+let whiteKingPos = {
+    x: 4,
+    y: 7
+};
+let blackKingPos = {
+    x: 4,
+    y: 0
+};
 let lastMove = {
     fromX: 0,
     fromY: 0,
@@ -28,7 +36,7 @@ let lastMove = {
     toY: 0,
     piece: '',
     color: '' 
-}
+};
 
 function inBounds(x, y) {
     return x >= 0 && y >= 0
@@ -50,7 +58,7 @@ function clearPosition() {
     render();
 }
 
-function commitMove(fromX, fromY, toX, toY) {
+function commitMove(fromX, fromY, toX, toY, board) {
     if(isShortCastle(fromX, fromY, toX, toY)) {
         if (board[fromY][fromX].color == "white"){
             board[7][7] = EM;
@@ -76,6 +84,15 @@ function commitMove(fromX, fromY, toX, toY) {
         isEnPassant = false;
     }
     
+    let c = turn, kingX, kingY;
+    if(turn == 'white') {
+        kingX = whiteKingPos.x;
+        kingY = whiteKingPos.y;
+    } else {
+        kingX = blackKingPos.x;
+        kingY = blackKingPos.y;
+    }
+
     lastMove.fromX = fromX;
     lastMove.fromY = fromY;
     lastMove.toX = toX;
@@ -83,6 +100,16 @@ function commitMove(fromX, fromY, toX, toY) {
     lastMove.piece = board[fromY][fromX].piece;
     lastMove.color = board[fromY][fromX].color;
     
+    if(board[fromY][fromX].piece == 'king'){
+        if(board[fromY][fromX].color == 'white') {
+            whiteKingPos.x = toX; 
+            whiteKingPos.y = toY;
+        } else {
+            blackKingPos.x = toX; 
+            blackKingPos.y = toY;
+        }
+    }
+
     if(isPromotion) {
         selection = renderPromotionMenu(toX, toY);
         board[toY][toX] = {color: board[fromY][fromX].color, piece: selection};
@@ -173,15 +200,17 @@ function isKingMove(fromX, fromY, toX, toY) {
     return false;
 }
 
-function inCheckDiagonal(kingX, kingY) {
+function inCheckDiagonal(kingX, kingY, board) {
     let kingColor = board[kingY][kingX].color;
     let tempX, tempY, dx, dy;
 
     dx = 1, dy = 1;
     tempX = kingX, tempY = kingY;
-    for(let i = 0; i < min(Math.abs(8 - kingX), Math.abs(8 - kingY)); ++i) {
-        c = board[kingY][tempX].color;
-        p = board[kingY][tempX].piece;
+    for(let i = 0; i < Math.min(Math.abs(7 - kingX), Math.abs(7 - kingY)); ++i) {
+        tempX += dx;
+        tempY += dy;
+        c = board[tempY][tempX].color;
+        p = board[tempY][tempX].piece;
         if(p != 'empty') {
             if(c != kingColor) {
                 if(p == 'bishop' || p == 'queen') 
@@ -198,9 +227,11 @@ function inCheckDiagonal(kingX, kingY) {
 
     dx = 1, dy = -1;
     tempX = kingX, tempY = kingY;
-    for(let i = 0; i < min(Math.abs(8 - kingX), Math.abs(0 - kingY)); ++i) {
-        c = board[kingY][tempX].color;
-        p = board[kingY][tempX].piece;
+    for(let i = 0; i < Math.min(Math.abs(7 - kingX), Math.abs(0 - kingY)); ++i) {
+        tempX += dx;
+        tempY += dy;
+        c = board[tempY][tempX].color;
+        p = board[tempY][tempX].piece;
         if(p != 'empty') {
             if(c != kingColor) {
                 if(p == 'bishop' || p == 'queen') 
@@ -217,11 +248,11 @@ function inCheckDiagonal(kingX, kingY) {
 
     dx = -1, dy = 1;
     tempX = kingX, tempY = kingY;
-    for(let i = 0; i < min(Math.abs(0 - kingX), Math.abs(8 - kingY)); ++i) {
-        c = board[tempY][kingX].color;
-        p = board[tempY][kingX].piece;
+    for(let i = 0; i < Math.min(Math.abs(0 - kingX), Math.abs(7 - kingY)); ++i) {
         tempX += dx;
         tempY += dy;
+        c = board[tempY][tempX].color;
+        p = board[tempY][tempX].piece;
         if(p != 'empty') {
             if(c != kingColor) {
                 if(p == 'bishop' || p == 'queen') 
@@ -238,11 +269,11 @@ function inCheckDiagonal(kingX, kingY) {
 
     dx = -1, dy = -1;
     tempX = kingX, tempY = kingY;
-    for(let i = 0; i < min(Math.abs(0 - kingX), Math.abs(0 - kingY)); ++i) {
-        c = board[tempY][kingX].color;
-        p = board[tempY][kingX].piece;
+    for(let i = 0; i < Math.min(Math.abs(0 - kingX), Math.abs(0 - kingY)); ++i) {
         tempX += dx;
         tempY += dy;
+        c = board[tempY][tempX].color;
+        p = board[tempY][tempX].piece;
         if(p != 'empty') {
             if(c != kingColor) {
                 if(p == 'bishop' || p == 'queen') 
@@ -258,7 +289,7 @@ function inCheckDiagonal(kingX, kingY) {
     }
 }
 
-function inCheckHorizontal(kingX, kingY) {
+function inCheckHorizontal(kingX, kingY, board) {
     let kingColor = board[kingY][kingX].color;
 
     for(let tempX = kingX + 1; tempX < 8; ++tempX) {
@@ -330,12 +361,37 @@ function inCheckHorizontal(kingX, kingY) {
     }
 }
 
+function inCheckKnight(kingX, kingY, board) {
+    c = board[kingY][kingX].color;
 
-function inCheck(kingX, kingY) {
-    return inCheckHorizontal(kingX, kingY) || 
-           inCheckDiagonal(kingX, kingY) ||
-           inCheckKnight(kingX, kingY) ||
-           inCheckPawn(kingX, kingY);
+    return (inBounds(kingX + 2, kingY + 1) && board[kingY + 1][kingX + 2].piece == 'knight' && board[kingY + 1][kingX + 2].color != c) ||
+           (inBounds(kingX + 2, kingY - 1) && board[kingY - 1][kingX + 2].piece == 'knight' && board[kingY - 1][kingX + 2].color != c) || 
+           (inBounds(kingX - 2, kingY + 1) && board[kingY + 1][kingX - 2].piece == 'knight' && board[kingY + 1][kingX - 2].color != c) ||
+           (inBounds(kingX - 2, kingY - 1) && board[kingY - 1][kingX - 2].piece == 'knight' && board[kingY - 1][kingX - 2].color != c) ||
+           (inBounds(kingX + 1, kingY + 2) && board[kingY + 2][kingX + 1].piece == 'knight' && board[kingY + 2][kingX + 1].color != c) ||
+           (inBounds(kingX + 1, kingY - 2) && board[kingY - 2][kingX + 1].piece == 'knight' && board[kingY - 2][kingX + 1].color != c) ||
+           (inBounds(kingX - 1, kingY + 2) && board[kingY + 2][kingX - 1].piece == 'knight' && board[kingY + 2][kingX - 1].color != c) ||
+           (inBounds(kingX - 1, kingY - 2) && board[kingY - 2][kingX - 1].piece == 'knight' && board[kingY - 2][kingX - 1].color != c);
+}
+
+function inCheckPawn(kingX, kingY, board) {
+    c = board[kingY][kingX].color;
+
+    if(c == 'white') {
+        return (inBounds(kingX - 1, kingY - 1) && board[kingY - 1][kingX - 1].piece == 'pawn' && board[kingY - 1][kingX - 1].color != c) ||
+               (inBounds(kingX + 1, kingY - 1) && board[kingY - 1][kingX + 1].piece == 'pawn' && board[kingY - 1][kingX + 1].color != c);
+    } else {
+        return (inBounds(kingX + 1, kingY - 1) && board[kingY - 1][kingX + 1].piece == 'pawn' && board[kingY - 1][kingX + 1].color != c) ||
+               (inBounds(kingX + 1, kingY + 1) && board[kingY + 1][kingX + 1].piece == 'pawn' && board[kingY + 1][kingX + 1].color != c);
+    }
+}
+
+
+function inCheck(kingX, kingY, board) {
+    return inCheckHorizontal(kingX, kingY, board) || 
+           inCheckDiagonal(kingX, kingY, board) ||
+           inCheckKnight(kingX, kingY, board) ||
+           inCheckPawn(kingX, kingY, board);
 }
 
 function isPawnMove(fromX, fromY, toX, toY, color) {
@@ -401,7 +457,7 @@ function isLongCastle(fromX, fromY, toX, toY) {
 }
 
 function legalMove(fromX, fromY, toX, toY, piece, color) {
-    let isLegal = false;
+    let isLegal = false, isInCheck = false, kingX, kingY;
 
     if(isInTurn(color) && isMoving(fromX, fromY, toX, toY)) {
         switch(piece) {
@@ -427,14 +483,26 @@ function legalMove(fromX, fromY, toX, toY, piece, color) {
                           isLongCastle(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, piece, color, 'horizontal');
                 break;
         }   
+        
+        if(turn == 'white') {
+            kingX = whiteKingPos.x;
+            kingY = whiteKingPos.y;
+        } else {
+            kingX = blackKingPos.x;
+            kingY = blackKingPos.y;
+        }
+
+        const oldBoard = JSON.parse(JSON.stringify(board));
+        commitMove(fromX, fromY, toX, toY, oldBoard); 
+        isInCheck = inCheck(kingX, kingY, oldBoard);
     }
 
-    return isLegal;
+    return isLegal && !isInCheck;
 }
 
 function movePiece(fromX, fromY, toX, toY) {
     if(legalMove(fromX, fromY, toX, toY, board[fromY][fromX].piece, board[fromY][fromX].color)) {
-        commitMove(fromX, fromY, toX, toY);
+        commitMove(fromX, fromY, toX, toY, board);
 
         if (turn == "white") {
             turn = "black";
@@ -463,6 +531,8 @@ function init() {
     blackHasCastled = false;
     whiteKingMoved = false;
     blackKingMoved = false;
+    isEnPassant = false;
+    isPromotion = false;
     lastMove = {
         fromX: 0,
         fromY: 0,
