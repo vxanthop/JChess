@@ -17,6 +17,8 @@ const EM = {color: "empty", piece: "empty"};
 
 let turn = "white";
 let board = [];
+let whiteHasCastled = false, blackHasCastled = false;
+let whiteKingMoved = false, blackKingMoved = false; 
 
 function inBounds(x, y) {
     return x >= 0 && y >= 0
@@ -38,23 +40,29 @@ function clearPosition() {
     render();
 }
 
-function canShortCastle(fromX, fromY, toX, toY) {
-    if (board[fromY][fromX].color == "white"){
-        return (fromX == 4 && fromY == 7 && toX == 6 && toY == 7 && board[7][7].piece == "rook");
-    } else {
-        return (fromX == 4 && fromY == 0 && toX == 6 && toY == 0 && board[7][0].piece == "rook");
-    }
-}
-
-function canLongCastle(fromX, fromY, toX, toY) {
-    if (board[fromY][fromX].color == "white"){
-        return (fromX == 4 && fromY == 7 && toX == 2 && toY == 7 && board[0][7].piece == "rook");
-    } else {
-        return (fromX == 4 && fromY == 0 && toX == 2 && toY == 0 && board[0][0].piece == "rook");
-    }
-}
-
 function commitMove(fromX, fromY, toX, toY) {
+    if(isShortCastle(fromX, fromY, toX, toY)) {
+        if (board[fromY][fromX].color == "white"){
+            board[7][7] = EM;
+            board[7][5] = WR;
+            whiteHasCastled = true;
+        } else {
+            board[0][7] = EM;
+            board[0][5] = BR;
+            blackHasCastled = true;
+        }    
+    } else if(isLongCastle(fromX, fromY, toX, toY)) {
+        if (board[fromY][fromX].color == "white"){
+            board[7][0] = EM;
+            board[7][3] = WR;
+            whiteHasCastled = true;
+        } else {
+            board[0][0] = EM;
+            board[0][3] = BR;
+            blackHasCastled = true;
+        }
+    }
+
     board[toY][toX] = board[fromY][fromX];
     board[fromY][fromX] = EM;
 }
@@ -62,6 +70,7 @@ function commitMove(fromX, fromY, toX, toY) {
 function isBlocked(fromX, fromY, toX, toY, piece, color, movement) {
     let dx, dy;
     let tempY = fromY, tempX = fromX;
+
     switch(movement) {
         case 'diagonal':
             dx = 1 - 2*(toX < fromX), dy = 1 - 2*(toY < fromY);
@@ -69,8 +78,6 @@ function isBlocked(fromX, fromY, toX, toY, piece, color, movement) {
             for(let i = 0; i < Math.abs(fromX - toX) - 1; ++i) {
                 tempX += dx;
                 tempY += dy;
-
-                console.log(tempX, tempY);
 
                 if(board[tempY][tempX] != EM) 
                     return true;
@@ -84,9 +91,7 @@ function isBlocked(fromX, fromY, toX, toY, piece, color, movement) {
                 
                 for(let i = 0; i < Math.abs(fromY - toY) - 1; ++i) {
                     tempY += dy;
-    
-                    console.log(tempX, tempY);
-    
+        
                     if(board[tempY][tempX] != EM) 
                         return true;
                 }
@@ -98,9 +103,7 @@ function isBlocked(fromX, fromY, toX, toY, piece, color, movement) {
 
                 for(let i = 0; i < Math.abs(fromX - toX) - 1; ++i) {
                     tempX += dx;
-    
-                    console.log(tempX, tempY);
-    
+        
                     if(board[tempY][tempX] != EM) 
                         return true;
                 }
@@ -131,7 +134,33 @@ function isKnightMove(fromX, fromY, toX, toY) {
 }
 
 function isKingMove(fromX, fromY, toX, toY) {
-    return (Math.abs(fromX - toX) <= 1 && Math.abs(fromY - toY) <= 1) || canLongCastle(fromX, fromY, toX, toY) || canShortCastle(fromX, fromY, toX, toY);
+    if(Math.abs(fromX - toX) <= 1 && Math.abs(fromY - toY) <= 1) {
+        if(board[fromY][fromX].color == 'white') {
+            whiteKingMoved = true;
+        } else {
+            blackKingMoved = true;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+function isShortCastle(fromX, fromY, toX, toY) {
+    if (board[fromY][fromX].color == "white"){
+        return !whiteKingMoved && !whiteHasCastled && fromX == 4 && fromY == 7 && toX == 6 && toY == 7 && board[7][7].piece == "rook";
+    } else {
+        return !blackHasCastled && fromX == 4 && fromY == 0 && toX == 6 && toY == 0 && board[7][0].piece == "rook";
+    }
+}
+
+function isLongCastle(fromX, fromY, toX, toY) {
+    if (board[fromY][fromX].color == "white"){
+        return !whiteHasCastled && fromX == 4 && fromY == 7 && toX == 2 && toY == 7 && board[0][7].piece == "rook";
+    } else {
+        return !blackKingMoved && !blackHasCastled && fromX == 4 && fromY == 0 && toX == 2 && toY == 0 && board[0][0].piece == "rook";
+    }
 }
 
 function legalMove(fromX, fromY, toX, toY, piece, color) {
@@ -170,7 +199,9 @@ function legalMove(fromX, fromY, toX, toY, piece, color) {
                           (isDiagonalMove(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, piece, color, 'diagonal'));
                 break;
             case "king":
-                isLegal = isKingMove(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, piece, color, '');
+                isLegal = (isKingMove(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, piece, color, '')) ||
+                          isShortCastle(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, piece, color, 'horizontal') || 
+                          isLongCastle(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, piece, color, 'horizontal');
                 break;
         }   
     }
@@ -205,11 +236,8 @@ function init() {
     ];
 
     turn = "white";
-    clicks = 0;
-    lastClick = {
-        x: 0,
-        y: 0
-    };
+    whiteHasCastled = false;
+    blackHasCastled = false;
 }
 
 init();
