@@ -7,6 +7,8 @@ const ctx = canvas.getContext('2d');
 const resetButton = document.getElementById('reset');
 const clearButton = document.getElementById('clear');
 
+const scoreSheet = document.getElementById('myTable')
+
 let canDrag = false;
 let currentMove = {
     fromX: 0,
@@ -69,6 +71,26 @@ const pieceSelector = {
     "blackbishop": BB,
     "blackqueen": BQ,
     "blackking": BK
+}
+
+const squareToAlgebraic = [
+    ['a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8'],
+    ['a7', 'b7', 'c7', 'd7', 'e7', 'f7', 'g7', 'h7'],
+    ['a6', 'b6', 'c6', 'd6', 'e6', 'f6', 'g6', 'h6'],
+    ['a5', 'b5', 'c5', 'd5', 'e5', 'f5', 'g5', 'h5'],
+    ['a4', 'b4', 'c4', 'd4', 'e4', 'f4', 'g4', 'h4'],
+    ['a3', 'b3', 'c3', 'd3', 'e3', 'f3', 'g3', 'h3'],
+    ['a2', 'b2', 'c2', 'd2', 'e2', 'f2', 'g2', 'h2'],
+    ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']
+];
+
+const pieceToAlgebraic = {
+    'pawn': '',
+    'rook': 'R',
+    'knight': 'N',
+    'bishop': 'B',
+    'queen': 'Q',
+    'king': 'K',
 }
 
 function modelToView(x, y) {
@@ -141,6 +163,42 @@ function mouseDown(x, y) {
     lastIcon = selectIcon(modelCoords.x, modelCoords.y);
 }
 
+function moveBuilder(move) {
+    if(move.isShortCastle) {
+        return 'o-o';
+    }
+
+    if(move.isLongCastle) {
+        return 'o-o-o';
+    }
+
+    moveString = '';
+    moveString += pieceToAlgebraic[move.piece.type];
+
+    if(move.isCapture) {
+        if(move.piece.type == 'pawn')
+            moveString += squareToAlgebraic[move.fromY][move.fromX].charAt(0);
+    
+        moveString += 'x';
+    }
+
+    moveString += squareToAlgebraic[move.toY][move.toX];
+
+    return moveString;
+}
+
+function renderScoresheet(move, moveNumber) {
+    if(moveNumber < 60) {   
+        i = Math.floor(moveNumber / 2) % 20;
+        j = Math.floor((moveNumber) % 2) + 3 * Math.floor(moveNumber / 40);
+        
+        moveString = moveBuilder(move);
+
+
+
+        scoreSheet.rows[i + 1].cells[j + 1].innerHTML = moveString;
+    }
+}
 
 function mouseMove(){
     if (canDrag){
@@ -171,6 +229,24 @@ function render() {
             renderBlock(x, y);
         }
     }
+}
+
+function activateSuperMode() {
+    WPIcon.src = 'images/todo.png';
+    BPIcon.src = 'images/todo.png';
+    WNIcon.src = 'images/todo.png';
+    BNIcon.src = 'images/todo.png';
+    WBIcon.src = 'images/todo.png';
+    BBIcon.src = 'images/todo.png';
+    WQIcon.src = 'images/todo.png';
+    BQIcon.src = 'images/todo.png';
+    WKIcon.src = 'images/todo.png';
+    BKIcon.src = 'images/todo.png';
+    WRIcon.src = 'images/todo.png';
+    BRIcon.src = 'images/todo.png';    
+    alert("BOOOOOOOOOOOOOOOM");
+    
+    superMode = true;
 }
 
 BRIcon.onload = function () {

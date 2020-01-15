@@ -1,3 +1,7 @@
+/* body {
+    background-color: ;
+} */
+
 button {
     background-color: black; 
     border: none;
@@ -7,15 +11,66 @@ button {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin: auto;
+    margin-top: 20px;
+}
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+  
+td, th {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+}
+
+.numbering {
+    font-weight: 900;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
 }
 
 .wrapper {
     text-align: center;
     padding: 10px;
+    overflow: hidden;
+}
+
+caption {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 900;
+    margin-bottom: 10px;
+}
+
+#big_red_button {
+    background-color: red;
+    color: black;
+    width: 300px;
+    height: 300px;
+    border-radius: 100%;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 50px;
+}
+
+#scoresheet {
+    width: 600; 
+    height: 600;
+    float: right;
+    margin-right: 50px;
+}
+
+#board {
+    float:left;
 }
 
 #myCanvas {
     display: block;
     margin: auto;
 }
+
