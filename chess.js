@@ -86,11 +86,6 @@ function pseudoCommitMove(fromX, fromY, toX, toY, myBoard) {
         myBoard[lastMove.toY][lastMove.toX] = EM;
     }
 
-    if(isPromotion) {
-        selection = renderPromotionMenu(toX, toY);
-        myBoard[toY][toX] = {color: myBoard[fromY][fromX].color, type: selection};
-    }
-
     myBoard[toY][toX] = myBoard[fromY][fromX];  
     myBoard[fromY][fromX] = EM;
 } 
@@ -129,18 +124,12 @@ function commitMove(fromX, fromY, toX, toY) {
         isEnPassant = false;
     }
 
-    // TODO: New piece is not an original reference of standard pieces
-    if(isPromotion) {
-        selection = renderPromotionMenu(toX, toY);
-        board[toY][toX] = {color: board[fromY][fromX].color, type: selection};
-        isPromotion = false;
-    }
     
     if(fromY == 0 && fromX == 0) blackCanLongCastle = false;
     else if(fromY == 0 && fromX == 7) blackCanShortCastle = false;
     else if(fromY == 7 && fromX == 0) whiteCanLongCastle = false;
     else if(fromY == 7 && fromX == 7) whiteCanShortCastle = false;
-
+    
     if(board[fromY][fromX] == WK){
         whiteCanLongCastle = false;
         whiteCanLongCastle = false;
@@ -152,14 +141,21 @@ function commitMove(fromX, fromY, toX, toY) {
         blackKingPos.x = toX; 
         blackKingPos.y = toY;
     }
-
+    
     lastMove.fromX = fromX;
     lastMove.fromY = fromY;
     lastMove.toX = toX;
     lastMove.toY = toY;
     lastMove.piece = board[fromY][fromX];
+    
+    if(isPromotion) {
+        selection = renderPromotionMenu(fromX, fromY);
+        board[toY][toX] = selection;
+        isPromotion = false;
+    } else {
+        board[toY][toX] = board[fromY][fromX];
+    }
 
-    board[toY][toX] = board[fromY][fromX];
     board[fromY][fromX] = EM;
 }
 
@@ -576,7 +572,7 @@ function movePiece(fromX, fromY, toX, toY) {
             
             // if(isStalemate()) {
             //     alert('Draw by Stalemate');
-            //     playing = 
+            //     playing = false;
             // }
 
         render();

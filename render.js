@@ -56,6 +56,21 @@ const iconSelector = {
     "blackking": BKIcon
 };
 
+const pieceSelector = {
+    "whitepawn": WP,
+    "whiterook": WR,
+    "whiteknight": WN,
+    "whitebishop": WB,
+    "whitequeen": WQ,
+    "whiteking": WK,
+    "blackpawn": BP,
+    "blackrook": BR,
+    "blackknight": BN,
+    "blackbishop": BB,
+    "blackqueen": BQ,
+    "blackking": BK
+}
+
 function modelToView(x, y) {
     return {
         x: x * BLOCK_W, 
@@ -75,12 +90,14 @@ function selectIcon(x, y) {
 }
 
 function renderPromotionMenu(x, y) {
-    let piece = 'pawn'
-    while(piece == 'pawn' || piece == 'king'){
-        piece = prompt("Enter the piece you wish to promote to", "queen");
+    let validOptions = ['queen', 'bishop', 'knight', 'rook']
+    let input, color = board[y][x].color;
+
+    while(!validOptions.includes(input)) {
+        input = prompt("Enter the piece you wish to promote to", "queen");
     }
 
-    return piece;
+    return pieceSelector[color + input];
 }
 
 function renderPiece(x, y) {
