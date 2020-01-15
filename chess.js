@@ -17,6 +17,7 @@ const EM = {color: "empty", piece: "empty"};
 
 let turn = "white";
 let board = [];
+let playing = true;
 let whiteHasCastled = false, blackHasCastled = false;
 let whiteKingMoved = false, blackKingMoved = false; 
 let isEnPassant = false;
@@ -58,7 +59,40 @@ function clearPosition() {
     render();
 }
 
-function commitMove(fromX, fromY, toX, toY, board) {
+ 
+//  tries to commit the move to check if it's legal 
+//  without changing the global state variables 
+function pseudoCommitMove(fromX, fromY, toX, toY, myBoard) {
+    if(isShortCastle(fromX, fromY, toX, toY)) {
+        if (myBoard[fromY][fromX].color == "white"){
+            myBoard[7][7] = EM;
+            myBoard[7][5] = WR;
+        } else {
+            myBoard[0][7] = EM;
+            myBoard[0][5] = BR;
+        }    
+    } else if(isLongCastle(fromX, fromY, toX, toY)) {
+        if (myBoard[fromY][fromX].color == "white"){
+            myBoard[7][0] = EM;
+            myBoard[7][3] = WR;
+        } else {
+            myBoard[0][0] = EM;
+            myBoard[0][3] = BR;
+        }
+    } else if(isEnPassant) {
+        myBoard[lastMove.toY][lastMove.toX] = EM;
+    }
+
+    if(isPromotion) {
+        selection = renderPromotionMenu(toX, toY);
+        myBoard[toY][toX] = {color: myBoard[fromY][fromX].color, piece: selection};
+    } else {
+        myBoard[toY][toX] = myBoard[fromY][fromX];
+    }
+    myBoard[fromY][fromX] = EM;
+} 
+
+function commitMove(fromX, fromY, toX, toY) {
     if(isShortCastle(fromX, fromY, toX, toY)) {
         if (board[fromY][fromX].color == "white"){
             board[7][7] = EM;
@@ -163,6 +197,12 @@ function isBlocked(fromX, fromY, toX, toY, piece, color, movement) {
     
                 return color == board[toY][toX].color;
             }
+
+        case 'unit':
+            return color == board[toY][toX].color;
+
+        default:
+            return false;
     }
 }
 
@@ -289,12 +329,12 @@ function inCheckDiagonal(kingX, kingY, board) {
     }
 }
 
-function inCheckHorizontal(kingX, kingY, board) {
-    let kingColor = board[kingY][kingX].color;
+function inCheckHorizontal(kingX, kingY, myBoard) {
+    let kingColor = myBoard[kingY][kingX].color;
 
     for(let tempX = kingX + 1; tempX < 8; ++tempX) {
-        c = board[kingY][tempX].color;
-        p = board[kingY][tempX].piece;
+        c = myBoard[kingY][tempX].color;
+        p = myBoard[kingY][tempX].piece;
         if(p != 'empty') {
             if(c != kingColor) {
                 if(p == 'rook' || p == 'queen') 
@@ -310,8 +350,8 @@ function inCheckHorizontal(kingX, kingY, board) {
     }
 
     for(let tempX = kingX - 1; tempX >= 0; --tempX) {
-        c = board[kingY][tempX].color;
-        p = board[kingY][tempX].piece;
+        c = myBoard[kingY][tempX].color;
+        p = myBoard[kingY][tempX].piece;
         if(p != 'empty') {
             if(c != kingColor) {
                 if(p == 'rook' || p == 'queen') 
@@ -327,8 +367,8 @@ function inCheckHorizontal(kingX, kingY, board) {
     }
 
     for(let tempY = kingY + 1; tempY < 8; ++tempY) {
-        c = board[tempY][kingX].color;
-        p = board[tempY][kingX].piece;
+        c = myBoard[tempY][kingX].color;
+        p = myBoard[tempY][kingX].piece;
         if(p != 'empty') {
             if(c != kingColor) {
                 if(p == 'rook' || p == 'queen') 
@@ -344,8 +384,8 @@ function inCheckHorizontal(kingX, kingY, board) {
     }
 
     for(let tempY = kingY - 1; tempY >= 0; --tempY) {
-        c = board[tempY][kingX].color;
-        p = board[tempY][kingX].piece;
+        c = myBoard[tempY][kingX].color;
+        p = myBoard[tempY][kingX].piece;
         if(p != 'empty') {
             if(c != kingColor) {
                 if(p == 'rook' || p == 'queen') 
@@ -361,37 +401,37 @@ function inCheckHorizontal(kingX, kingY, board) {
     }
 }
 
-function inCheckKnight(kingX, kingY, board) {
-    c = board[kingY][kingX].color;
+function inCheckKnight(kingX, kingY, myBoard) {
+    c = myBoard[kingY][kingX].color;
 
-    return (inBounds(kingX + 2, kingY + 1) && board[kingY + 1][kingX + 2].piece == 'knight' && board[kingY + 1][kingX + 2].color != c) ||
-           (inBounds(kingX + 2, kingY - 1) && board[kingY - 1][kingX + 2].piece == 'knight' && board[kingY - 1][kingX + 2].color != c) || 
-           (inBounds(kingX - 2, kingY + 1) && board[kingY + 1][kingX - 2].piece == 'knight' && board[kingY + 1][kingX - 2].color != c) ||
-           (inBounds(kingX - 2, kingY - 1) && board[kingY - 1][kingX - 2].piece == 'knight' && board[kingY - 1][kingX - 2].color != c) ||
-           (inBounds(kingX + 1, kingY + 2) && board[kingY + 2][kingX + 1].piece == 'knight' && board[kingY + 2][kingX + 1].color != c) ||
-           (inBounds(kingX + 1, kingY - 2) && board[kingY - 2][kingX + 1].piece == 'knight' && board[kingY - 2][kingX + 1].color != c) ||
-           (inBounds(kingX - 1, kingY + 2) && board[kingY + 2][kingX - 1].piece == 'knight' && board[kingY + 2][kingX - 1].color != c) ||
-           (inBounds(kingX - 1, kingY - 2) && board[kingY - 2][kingX - 1].piece == 'knight' && board[kingY - 2][kingX - 1].color != c);
+    return (inBounds(kingX + 2, kingY + 1) && myBoard[kingY + 1][kingX + 2].piece == 'knight' && myBoard[kingY + 1][kingX + 2].color != c) ||
+           (inBounds(kingX + 2, kingY - 1) && myBoard[kingY - 1][kingX + 2].piece == 'knight' && myBoard[kingY - 1][kingX + 2].color != c) || 
+           (inBounds(kingX - 2, kingY + 1) && myBoard[kingY + 1][kingX - 2].piece == 'knight' && myBoard[kingY + 1][kingX - 2].color != c) ||
+           (inBounds(kingX - 2, kingY - 1) && myBoard[kingY - 1][kingX - 2].piece == 'knight' && myBoard[kingY - 1][kingX - 2].color != c) ||
+           (inBounds(kingX + 1, kingY + 2) && myBoard[kingY + 2][kingX + 1].piece == 'knight' && myBoard[kingY + 2][kingX + 1].color != c) ||
+           (inBounds(kingX + 1, kingY - 2) && myBoard[kingY - 2][kingX + 1].piece == 'knight' && myBoard[kingY - 2][kingX + 1].color != c) ||
+           (inBounds(kingX - 1, kingY + 2) && myBoard[kingY + 2][kingX - 1].piece == 'knight' && myBoard[kingY + 2][kingX - 1].color != c) ||
+           (inBounds(kingX - 1, kingY - 2) && myBoard[kingY - 2][kingX - 1].piece == 'knight' && myBoard[kingY - 2][kingX - 1].color != c);
 }
 
-function inCheckPawn(kingX, kingY, board) {
-    c = board[kingY][kingX].color;
+function inCheckPawn(kingX, kingY, myBoard) {
+    c = myBoard[kingY][kingX].color;
 
     if(c == 'white') {
-        return (inBounds(kingX - 1, kingY - 1) && board[kingY - 1][kingX - 1].piece == 'pawn' && board[kingY - 1][kingX - 1].color != c) ||
-               (inBounds(kingX + 1, kingY - 1) && board[kingY - 1][kingX + 1].piece == 'pawn' && board[kingY - 1][kingX + 1].color != c);
+        return (inBounds(kingX - 1, kingY - 1) && myBoard[kingY - 1][kingX - 1].piece == 'pawn' && myBoard[kingY - 1][kingX - 1].color != c) ||
+               (inBounds(kingX + 1, kingY - 1) && myBoard[kingY - 1][kingX + 1].piece == 'pawn' && myBoard[kingY - 1][kingX + 1].color != c);
     } else {
-        return (inBounds(kingX + 1, kingY - 1) && board[kingY - 1][kingX + 1].piece == 'pawn' && board[kingY - 1][kingX + 1].color != c) ||
-               (inBounds(kingX + 1, kingY + 1) && board[kingY + 1][kingX + 1].piece == 'pawn' && board[kingY + 1][kingX + 1].color != c);
+        return (inBounds(kingX + 1, kingY + 1) && myBoard[kingY + 1][kingX + 1].piece == 'pawn' && myBoard[kingY + 1][kingX + 1].color != c) ||
+               (inBounds(kingX - 1, kingY + 1) && myBoard[kingY + 1][kingX - 1].piece == 'pawn' && myBoard[kingY + 1][kingX - 1].color != c);
     }
 }
 
 
-function inCheck(kingX, kingY, board) {
-    return inCheckHorizontal(kingX, kingY, board) || 
-           inCheckDiagonal(kingX, kingY, board) ||
-           inCheckKnight(kingX, kingY, board) ||
-           inCheckPawn(kingX, kingY, board);
+function inCheck(kingX, kingY, myBoard) {
+    return inCheckHorizontal(kingX, kingY, myBoard) || 
+           inCheckDiagonal(kingX, kingY, myBoard) ||
+           inCheckKnight(kingX, kingY, myBoard) ||
+           inCheckPawn(kingX, kingY, myBoard);
 }
 
 function isPawnMove(fromX, fromY, toX, toY, color) {
@@ -440,6 +480,7 @@ function isPawnMove(fromX, fromY, toX, toY, color) {
     }
 }
 
+//TODO: rook has moved?
 function isShortCastle(fromX, fromY, toX, toY) {
     if (board[fromY][fromX].color == "white"){
         return !whiteKingMoved && !whiteHasCastled && fromX == 4 && fromY == 7 && toX == 6 && toY == 7 && board[7][7].piece == "rook";
@@ -459,7 +500,7 @@ function isLongCastle(fromX, fromY, toX, toY) {
 function legalMove(fromX, fromY, toX, toY, piece, color) {
     let isLegal = false, isInCheck = false, kingX, kingY;
 
-    if(isInTurn(color) && isMoving(fromX, fromY, toX, toY)) {
+    if(isInTurn(color) && isMoving(fromX, fromY, toX, toY) && inBounds(toX, toY)) {
         switch(piece) {
             case "pawn":
                 isLegal = isPawnMove(fromX, fromY, toX, toY, color) && !isBlocked(fromX, fromY, toX, toY, piece, color, 'horizontal');
@@ -478,40 +519,79 @@ function legalMove(fromX, fromY, toX, toY, piece, color) {
                           (isDiagonalMove(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, piece, color, 'diagonal'));
                 break;
             case "king":
-                isLegal = (isKingMove(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, piece, color, '')) ||
+                isLegal = (isKingMove(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, piece, color, 'unit')) ||
                           isShortCastle(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, piece, color, 'horizontal') || 
                           isLongCastle(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, piece, color, 'horizontal');
                 break;
         }   
-        
-        if(turn == 'white') {
-            kingX = whiteKingPos.x;
-            kingY = whiteKingPos.y;
-        } else {
-            kingX = blackKingPos.x;
-            kingY = blackKingPos.y;
-        }
-
-        const oldBoard = JSON.parse(JSON.stringify(board));
-        commitMove(fromX, fromY, toX, toY, oldBoard); 
-        isInCheck = inCheck(kingX, kingY, oldBoard);
     }
 
-    return isLegal && !isInCheck;
+    if(isLegal) {
+        if(piece == 'king') {
+            kingX = toX;
+            kingY = toY;
+        } else {
+            if(turn == 'white') {
+                kingX = whiteKingPos.x;
+                kingY = whiteKingPos.y;
+            } else {
+                kingX = blackKingPos.x;
+                kingY = blackKingPos.y;
+            }
+        }
+
+        const testBoard = JSON.parse(JSON.stringify(board));
+        pseudoCommitMove(fromX, fromY, toX, toY, testBoard); 
+        isInCheck = inCheck(kingX, kingY, testBoard);
+
+        return !isInCheck;
+    }
+
+    return false;
+}
+
+function inCheckmate(kingX, kingY) {
+    return inCheck(kingX, kingY, board) && !kingHasMoves(kingX, kingY); // && cantStopCheck(threaterX, threaterY, kingX, kingY)
+}
+
+function kingHasMoves(kingX, kingY) {
+    let moves = 0;
+    for(let dx = -1; dx <= 1; ++dx) {
+        for(let dy = -1; dy <= 1; ++dy) {
+            if(dx != 0 || dy != 0){
+                if(legalMove(kingX, kingY, kingX + dx, kingY + dy, board[kingY][kingX].piece, board[kingY][kingX].color))
+                    moves++ ;
+            }
+        }
+    }
+
+    console.log(moves);
+
+    return moves > 0;
 }
 
 function movePiece(fromX, fromY, toX, toY) {
-    if(legalMove(fromX, fromY, toX, toY, board[fromY][fromX].piece, board[fromY][fromX].color)) {
-        commitMove(fromX, fromY, toX, toY, board);
-
-        if (turn == "white") {
-            turn = "black";
-        } else {
-            turn = "white";
-        }
-    }
+    let kingX, kingY;
     
-    render();
+    if(playing) {
+        if(legalMove(fromX, fromY, toX, toY, board[fromY][fromX].piece, board[fromY][fromX].color)) {
+            commitMove(fromX, fromY, toX, toY, board);
+            
+            if (turn == "white") {
+                turn = "black";
+                // if(inCheckmate(blackKingPos.x, blackKingPos.y)) {
+                //     alert("White won!!");
+                // }
+            } else {
+                turn = "white";
+                // if(inCheckmate(whiteKingPos.x, whiteKingPos.y)) {
+                //     alert("Black won!!")
+                // }
+            }
+        }
+        
+        render();
+    }
 }
 
 function init() {
@@ -527,12 +607,12 @@ function init() {
     ];
 
     turn = "white";
+    isEnPassant = false;
+    isPromotion = false;
     whiteHasCastled = false;
     blackHasCastled = false;
     whiteKingMoved = false;
-    blackKingMoved = false;
-    isEnPassant = false;
-    isPromotion = false;
+    blackKingMoved = false; 
     lastMove = {
         fromX: 0,
         fromY: 0,
@@ -541,6 +621,14 @@ function init() {
         piece: '',
         color: '' 
     }
+    whiteKingPos = {
+        x: 4,
+        y: 7
+    };
+    blackKingPos = {
+        x: 4,
+        y: 0
+    };
 }
 
 init();
