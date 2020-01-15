@@ -7,7 +7,7 @@ const ctx = canvas.getContext('2d');
 const resetButton = document.getElementById('reset');
 const clearButton = document.getElementById('clear');
 
-let dragok = false;
+let canDrag = false;
 let currentMove = {
     fromX: 0,
     fromY: 0,
@@ -16,17 +16,17 @@ let currentMove = {
 };
 
 const WPIcon = new Image(),
-BPIcon = new Image(),
-WNIcon = new Image(),
-BNIcon = new Image(),
-WBIcon = new Image(),
-BBIcon = new Image(),
-WQIcon = new Image(),
-BQIcon = new Image(),
-WKIcon = new Image(),
-BKIcon = new Image(),
-WRIcon = new Image(),
-BRIcon = new Image();
+      BPIcon = new Image(),
+      WNIcon = new Image(),
+      BNIcon = new Image(),
+      WBIcon = new Image(),
+      BBIcon = new Image(),
+      WQIcon = new Image(),
+      BQIcon = new Image(),
+      WKIcon = new Image(),
+      BKIcon = new Image(),
+      WRIcon = new Image(),
+      BRIcon = new Image();
 
 WPIcon.src = 'images/Chess_plt45.svg';
 BPIcon.src = 'images/Chess_pdt45.svg';
@@ -118,7 +118,7 @@ function mouseDown(x, y) {
     currentMove.fromX = modelCoords.x;
     currentMove.fromY = modelCoords.y;
 
-    dragok = true;
+    canDrag = true;
     canvas.onmousemove = mouseMove;
 
     lastIcon = selectIcon(modelCoords.x, modelCoords.y);
@@ -126,7 +126,7 @@ function mouseDown(x, y) {
 
 
 function mouseMove(){
-    if (dragok){
+    if (canDrag){
         x = event.pageX - canvas.offsetLeft - BLOCK_H / 2; 
         y = event.pageY - canvas.offsetTop - BLOCK_W / 2; 
 
@@ -137,7 +137,7 @@ function mouseMove(){
 }
 
 function mouseUp(x, y) {
-    dragok = false;
+    canDrag = false;
     canvas.onmousemove = null;
 
     const modelCoords = viewToModel(x, y);
