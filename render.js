@@ -71,7 +71,7 @@ function viewToModel(x, y) {
 }
 
 function selectIcon(x, y) {
-    return iconSelector[board[y][x].color + board[y][x].piece];
+    return iconSelector[board[y][x].color + board[y][x].type];
 }
 
 function renderPromotionMenu(x, y) {
