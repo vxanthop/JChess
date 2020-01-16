@@ -62,7 +62,6 @@ function clearPosition() {
     render();
 }
 
- 
 //  tries to commit the move to check if it's legal,
 //  without changing the global state variables 
 function pseudoCommitMove(fromX, fromY, toX, toY, myBoard) {
@@ -99,7 +98,9 @@ function pseudoCommitMove(fromX, fromY, toX, toY, myBoard) {
 } 
 
 function isCapture(fromX, fromY, toX, toY) {
-    return (board[toY][toX].color != board[fromY][fromX].color) && board[toY][toX].color != 'empty' && board[fromY][fromX].color != 'empty';
+    return (board[toY][toX].color != board[fromY][fromX].color) && 
+           board[toY][toX].color != 'empty' && 
+           board[fromY][fromX].color != 'empty';
 }
 
 function commitMove(fromX, fromY, toX, toY) {
@@ -268,7 +269,7 @@ function isKingMove(fromX, fromY, toX, toY) {
 
 function inCheckDiagonal(kingX, kingY, myBoard) {
     let kingColor = myBoard[kingY][kingX].color, enemyBishop, enemyQueen;
-    let tempX, tempY, dx, dy;
+    let dx, dy;
     if(kingColor == 'white') {
         enemyBishop = BB;
         enemyQueen = BQ; 
@@ -577,7 +578,7 @@ function countMoves() {
 
     for(let x = 0; x < ROWS; x++) {
         for(let y = 0; y < COLS; y++) {
-            // if (moves > 0) return moves;
+            if (moves > 0) return moves; // Optimization that works if we care only about the existance of moves
 
             color = board[y][x].color;
 
