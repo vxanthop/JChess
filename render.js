@@ -206,6 +206,15 @@ function renderScoresheet(move, moveNumber) {
     }
 }
 
+function resetScoresheet() {
+    for(let counter = 0; counter < 60; ++counter) {
+        i = Math.floor(counter / 2) % 20;
+        j = Math.floor((counter) % 2) + 3 * Math.floor(counter / 40);
+            
+        scoreSheet.rows[i + 1].cells[j + 1].innerHTML = '';
+    }
+}
+
 function mouseMove(){
     if (canDrag){
         x = event.pageX - canvas.offsetLeft - BLOCK_H / 2; 
@@ -239,17 +248,17 @@ function render() {
 
 function activateSuperMode() {
     WPIcon.src = 'images/todo.png';
-    BPIcon.src = 'images/todo.png';
+    BPIcon.src = 'images/kostas.png';
     WNIcon.src = 'images/todo.png';
-    BNIcon.src = 'images/todo.png';
+    BNIcon.src = 'images/kostas.png';
     WBIcon.src = 'images/todo.png';
-    BBIcon.src = 'images/todo.png';
+    BBIcon.src = 'images/kostas.png';
     WQIcon.src = 'images/todo.png';
-    BQIcon.src = 'images/todo.png';
+    BQIcon.src = 'images/kostas.png';
     WKIcon.src = 'images/todo.png';
-    BKIcon.src = 'images/todo.png';
+    BKIcon.src = 'images/kostas.png';
     WRIcon.src = 'images/todo.png';
-    BRIcon.src = 'images/todo.png';    
+    BRIcon.src = 'images/kostas.png';    
     alert("BOOOOOOOOOOOOOOOM");
     
     superMode = true;

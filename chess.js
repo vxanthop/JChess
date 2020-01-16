@@ -49,6 +49,7 @@ function inBounds(x, y) {
 
 function resetPosition() {
     init();
+    resetScoresheet();
     render();
 }
 
@@ -59,6 +60,7 @@ function clearPosition() {
         }
     }
 
+    resetScoresheet();
     render();
 }
 
