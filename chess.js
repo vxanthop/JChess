@@ -228,6 +228,9 @@ function isBlocked(fromX, fromY, toX, toY, movement) {
                 return color == board[toY][toX].color;
             }
 
+        case 'knight':
+            return color == board[toY][toX].color;
+
         case 'unit':
             return color == board[toY][toX].color;
 
@@ -310,6 +313,7 @@ function inCheckDiagonal(kingX, kingY, myBoard) {
 
 function inCheckStraight(kingX, kingY, myBoard) {
     let kingColor = myBoard[kingY][kingX].color, enemyRook, enemyQueen;
+
     if(kingColor == 'white') {
         enemyRook = BR;
         enemyQueen = BQ; 
@@ -482,6 +486,141 @@ function isLongCastle(fromX, fromY, toX, toY) {
     }
 }
 
+function generateKnightMoves(fromX, fromY) {
+    moves = 0;
+
+    if (legalMove(fromX, fromY, fromX + 2, fromY + 1, 'knight', turn)) moves++; 
+    if (legalMove(fromX, fromY, fromX + 2, fromY - 1, 'knight', turn)) moves++;  
+    if (legalMove(fromX, fromY, fromX - 2, fromY + 1, 'knight', turn)) moves++; 
+    if (legalMove(fromX, fromY, fromX - 2, fromY - 1, 'knight', turn)) moves++; 
+    if (legalMove(fromX, fromY, fromX + 1, fromY + 2, 'knight', turn)) moves++; 
+    if (legalMove(fromX, fromY, fromX + 1, fromY - 2, 'knight', turn)) moves++; 
+    if (legalMove(fromX, fromY, fromX - 1, fromY + 2, 'knight', turn)) moves++; 
+    if (legalMove(fromX, fromY, fromX - 1, fromY - 2, 'knight', turn)) moves++;
+
+    return moves;
+}
+
+function generateStraightMoves(fromX, fromY) {
+    moves = 0;
+    let type = board[fromY][fromX].type; 
+
+    for(let tempX = fromX + 1; tempX < COLS; ++tempX) {
+        if(legalMove(fromX, fromY, tempX, fromY, type, turn)) moves++;
+    }
+
+    for(let tempX = fromX - 1; tempX >= 0; --tempX) {
+        if(legalMove(fromX, fromY, tempX, fromY, type, turn)) moves++;
+    }
+
+    for(let tempY = fromY + 1; tempY < ROWS; ++tempY) {
+        if(legalMove(fromX, fromY, fromX, tempY, type, turn)) moves++;
+    }
+
+    for(let tempY = fromY - 1; tempY >= 0; --tempY) {
+        if(legalMove(fromX, fromY, fromX, tempY, type, turn)) moves++;
+    }
+
+    return moves++;
+}
+
+function generateDiagonalMoves(fromX, fromY) {
+    let moves = 0, dx, dy;
+    let type = board[fromY][fromX].type; 
+
+    dx = 1, dy = 1;
+    for(let tempX = fromX + dx, tempY = fromY + dy; inBounds(tempX, tempY); tempX += dx, tempY += dy) {
+        if(legalMove(fromX, fromY, tempX, tempY, type, turn)) moves++;
+    }
+
+    dx = -1, dy = 1;
+    for(let tempX = fromX + dx, tempY = fromY + dy; inBounds(tempX, tempY); tempX += dx, tempY += dy) {
+        if(legalMove(fromX, fromY, tempX, tempY, type, turn)) moves++;
+    }
+
+    dx = 1, dy = -1;
+    for(let tempX = fromX + dx, tempY = fromY + dy; inBounds(tempX, tempY); tempX += dx, tempY += dy) {
+        if(legalMove(fromX, fromY, tempX, tempY, type, turn)) moves++;
+    }
+
+    dx = -1, dy = -1;
+    for(let tempX = fromX + dx, tempY = fromY + dy; inBounds(tempX, tempY); tempX += dx, tempY += dy) {
+        if(legalMove(fromX, fromY, tempX, tempY, type, turn)) moves++;
+    }
+
+
+    return moves;
+}
+
+function generatePawnMoves(fromX, fromY) {
+    let moves = 0;
+
+    if(turn == 'white') {
+        if(legalMove(fromX, fromY, fromX, fromY - 1, 'pawn', 'white')) moves++;
+        if(legalMove(fromX, fromY, fromX, fromY - 2, 'pawn', 'white')) moves++;
+        if(legalMove(fromX, fromY, fromX - 1, fromY - 1, 'pawn', 'white')) moves++;
+        if(legalMove(fromX, fromY, fromX + 1, fromY - 1, 'pawn', 'white')) moves++;
+    } else {
+        if(legalMove(fromX, fromY, fromX, fromY + 1, 'pawn', 'black')) moves++;
+        if(legalMove(fromX, fromY, fromX, fromY + 2, 'pawn', 'black')) moves++;
+        if(legalMove(fromX, fromY, fromX - 1, fromY + 1, 'pawn', 'black')) moves++;
+        if(legalMove(fromX, fromY, fromX + 1, fromY + 1, 'pawn', 'black')) moves++;
+    }
+
+    return moves;
+}
+
+function generateKingMoves(fromX, fromY) {
+    let moves = 0;
+    
+    for(let dx = -1; dx <= 1; ++dx) {
+        for(let dy = -1; dy <= 1; ++dy) {
+            if(dx != 0 || dy != 0){
+                if(legalMove(fromX, fromY, fromX + dx, fromY + dy, 'king', turn)) moves++;
+            }
+        }
+    }
+
+    return moves;
+}
+
+function generateMoves() {
+    let moves = 0
+
+    for(let x = 0; x < ROWS; x++) {
+        for(let y = 0; y < COLS; y++) {
+            color = board[y][x].color;
+
+            if(turn == color){
+                type = board[y][x].type;
+                switch(type) {
+                    case 'pawn':
+                        moves += generatePawnMoves(x, y);
+                        break;
+                    case 'bishop':
+                        moves += generateDiagonalMoves(x, y);
+                        break;
+                    case 'knight':
+                        moves += generateKnightMoves(x, y);
+                        break;
+                    case 'rook':
+                        moves += generateStraightMoves(x, y);
+                        break;
+                    case 'queen':
+                        moves += (generateDiagonalMoves(x, y) + generateStraightMoves(x, y));
+                        break;
+                    case 'king':
+                        moves += generateKingMoves(x, y);
+                        break;
+                }
+            }
+        }
+    }
+
+    return moves;
+}
+
+
 function legalMove(fromX, fromY, toX, toY, type, color) {
     let isLegal = false, isInCheck = false, kingX, kingY;
 
@@ -494,7 +633,7 @@ function legalMove(fromX, fromY, toX, toY, type, color) {
                 isLegal = isDiagonalMove(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, 'diagonal');
                 break;
             case 'knight':
-                isLegal = isKnightMove(fromX, fromY, toX, toY);
+                isLegal = isKnightMove(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, 'knight');
                 break;
             case 'rook':
                 isLegal = isStraightMove(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, 'straight');
@@ -535,31 +674,13 @@ function legalMove(fromX, fromY, toX, toY, type, color) {
     return false;
 }
 
-// function isCheckmate(kingX, kingY) {
-//     return inCheck(kingX, kingY, board) && !hasMoves(kingX, kingY);
-// }
-
-// function isStalemate(kingX, kingY) {
-//     return !inCheck() && !hasMoves(kingX, kingY);
-// }
-
-// function kingHasMoves(kingX, kingY) {
-//     let moves = 0;
-//     for(let dx = -1; dx <= 1; ++dx) {
-//         for(let dy = -1; dy <= 1; ++dy) {
-//             if(dx != 0 || dy != 0){
-//                 if(legalMove(kingX, kingY, kingX + dx, kingY + dy, board[kingY][kingX].type, board[kingY][kingX].color))
-//                     moves++ ;
-//             }
-//         }
-//     }
-
-//     console.log(moves);
-
-//     return moves > 0;
-// }
+function hasMoves() {
+    return generateMoves() > 0;
+}
 
 function movePiece(fromX, fromY, toX, toY) {
+    let kingX, kingY;
+    
     if(superMode) {
         alert("BOOOOOOOOOOOOOOOOOOOM");
         board[toY][toX] = board[fromY][fromX];
@@ -568,25 +689,31 @@ function movePiece(fromX, fromY, toX, toY) {
         if(legalMove(fromX, fromY, toX, toY, board[fromY][fromX].type, board[fromY][fromX].color)) {
             commitMove(fromX, fromY, toX, toY, board);
             
+            
             if (turn == 'white') {
                 turn = 'black';
-                // if(isCheckmate(blackKingPos.x, blackKingPos.y)) {
-                //     alert('White won!!');
-                //     playing = false;
-                // }
             } else {
                 turn = 'white';
-                // if(isCheckmate(whiteKingPos.x, whiteKingPos.y)) {
-                    //     alert('Black won!!')
-                    //     playing = false;
-                    // }
+            }
+        }
+                
+        if(!hasMoves()) {
+            if (turn == 'white') {
+                if(inCheck(whiteKingPos.x, whiteKingPos.y, board)) {
+                    alert('Black won by checkmate!!');
+                } else {
+                    alert('Draw by Stalemate');
+                }
+            } else {
+                if(inCheck(blackKingPos.x, blackKingPos.y, board)) {
+                    alert('White won by checkmate!!');
+                } else {
+                    alert('Draw by Stalemate');                    
                 }
             }
             
-            // if(isStalemate()) {
-            //     alert('Draw by Stalemate');
-            //     playing = false;
-            // }
+            playing = false;
+        }
 
         render();
     }
