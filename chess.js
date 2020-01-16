@@ -22,8 +22,6 @@ let moveNumber = 0;
 let board = [];
 let whiteCanShortCastle = true, blackCanShortCastle = true;
 let whiteCanLongCastle = true, blackCanLongCastle = true;
-let isEnPassant = false;
-let isPromotion = false;
 let whiteKingPos = {
     x: 4,
     y: 7
@@ -68,6 +66,8 @@ function clearPosition() {
 //  tries to commit the move to check if it's legal,
 //  without changing the global state variables 
 function pseudoCommitMove(fromX, fromY, toX, toY, myBoard) {
+    let color = board[fromY][fromX].color, _isEnPassant;
+
     if(isShortCastle(fromX, fromY, toX, toY)) {
         if (myBoard[fromY][fromX].color == 'white'){
             myBoard[7][7] = EM;
@@ -87,8 +87,10 @@ function pseudoCommitMove(fromX, fromY, toX, toY, myBoard) {
             myBoard[0][3] = BR;
         }
     }
+
+    _isEnPassant = isEnPassant(fromX, fromY, toX, toY, color);
     
-    if(isEnPassant) {
+    if(_isEnPassant) {
         myBoard[lastMove.toY][lastMove.toX] = EM;
     }
 
@@ -101,8 +103,10 @@ function isCapture(fromX, fromY, toX, toY) {
 }
 
 function commitMove(fromX, fromY, toX, toY) {
+    let color = board[fromY][fromX].color, _isEnPassant, _isPromotion; 
+
     if(isShortCastle(fromX, fromY, toX, toY)) {
-        if (board[fromY][fromX].color == 'white'){
+        if (color == 'white'){
             board[7][7] = EM;
             board[7][5] = WR;
             whiteCanShortCastle = false;
@@ -120,7 +124,7 @@ function commitMove(fromX, fromY, toX, toY) {
     }
     
     if(isLongCastle(fromX, fromY, toX, toY)) {
-        if (board[fromY][fromX].color == 'white'){
+        if (color == 'white'){
             board[7][0] = EM;
             board[7][3] = WR;
             whiteCanLongCastle = false;
@@ -137,11 +141,8 @@ function commitMove(fromX, fromY, toX, toY) {
         lastMove.isLongCastle = false;
     }
     
-    if(isEnPassant) {
-        board[lastMove.toY][lastMove.toX] = EM;
-        isEnPassant = false;
-    }
-
+    _isEnPassant = isEnPassant(fromX, fromY, toX, toY, color);
+    _isPromotion = isPromotion(fromX, fromY, toX, toY, color);
     
     if(fromY == 0 && fromX == 0) blackCanLongCastle = false;
     else if(fromY == 0 && fromX == 7) blackCanShortCastle = false;
@@ -165,9 +166,13 @@ function commitMove(fromX, fromY, toX, toY) {
     lastMove.toX = toX;
     lastMove.toY = toY;
     lastMove.piece = board[fromY][fromX];
-    lastMove.isCapture = isCapture(fromX, fromY, toX, toY)
-    
-    if(isPromotion) {
+    lastMove.isCapture = isCapture(fromX, fromY, toX, toY) || _isEnPassant;
+    lastMove.isEnPassant = isEnPassant(fromX, fromY, toX, toY, color);
+    lastMove.isPromotion = _isPromotion;
+
+    if(_isEnPassant) board[lastMove.toY][lastMove.toX] = EM;
+
+    if(_isPromotion) {
         selection = renderPromotionMenu(fromX, fromY);
         board[toY][toX] = selection;
         lastMove.isPromotion = true;
@@ -399,7 +404,6 @@ function inCheckPawn(kingX, kingY, myBoard) {
     }
 }
 
-
 function inCheck(kingX, kingY, myBoard) {
     return inCheckStraight(kingX, kingY, myBoard) || 
            inCheckDiagonal(kingX, kingY, myBoard) ||
@@ -408,49 +412,35 @@ function inCheck(kingX, kingY, myBoard) {
            inCheckKing(kingX, kingY, myBoard);
 }
 
-function isPawnMove(fromX, fromY, toX, toY, color) {
-    if(board[toY][toX] == EM){
+function isEnPassant(fromX, fromY, toX, toY, color) {
+    if(board[fromY][fromX].type == 'pawn') {
         if(color == 'white') {
-            if((fromX == toX) && (fromY == toY + 1) || ((fromY == toY + 2) && (fromX == toX) && fromY == 6)) {
-                if(toY == 0) {
-                    isPromotion = true;
-                }
-                return true;
-            } else if(lastMove.piece == BP && Math.abs(lastMove.fromY - lastMove.toY) == 2 && lastMove.toX == toX && lastMove.toY == toY + 1) {
-                isEnPassant = true;
-                return true;
-            }
+            return lastMove.piece == BP && lastMove.toY - lastMove.fromY == 2 && lastMove.fromX == lastMove.toX && lastMove.toY == toY + 1;
         } else {
-            if((fromX == toX) && (fromY == toY - 1) || ((fromY == toY - 2) && (fromX == toX) && fromY == 1)) {
-                if(toY == 7) {
-                    isPromotion = true;
-                }
-                return true;
-            } else if (lastMove == WP && Math.abs(lastMove.fromY - lastMove.toY) == 2 && lastMove.toX == toX && lastMove.toY == toY - 1) {
-                isEnPassant = true;
-                return true;
-            }
+            return lastMove.piece == BP && lastMove.fromY - lastMove.toY == 2 && lastMove.fromX == lastMove.toX && lastMove.toY == toY - 1;
         }
-    } else {
-        if(board[toY][toX].color != color) {
-            if(color == 'white') {    
-                if((fromY == toY + 1) && (Math.abs(fromX - toX) == 1)) {
-                    if(toY == 0) {
-                        isPromotion = true;
-                    }       
-                    return true;
-                }
-            } else {
-                if((fromY == toY - 1) && (Math.abs(fromX - toX) == 1)) {
-                    if(toY == 7) {
-                        isPromotion = true;
-                    }
-                    return true;
-                }
-            }
+    }
+}
 
-            return false;
+function isPromotion(fromX, fromY, toX, toY, color) {
+    if(board[fromY][fromX].type == 'pawn') {
+        if(color == 'white') {
+            return toY == 0;
+        } else {
+            return toY == 7;
         }
+    }
+}
+
+function isPawnMove(fromX, fromY, toX, toY, color) {
+    if(color == 'white') {
+        return ((fromX == toX && toY == fromY - 1) || (fromX == toX && toY == fromY - 2 && fromY == 6)) || // straight move
+               (board[toY][toX].color == 'black' && Math.abs(fromX - toX) == 1 && toY == fromY - 1) || // capture
+               isEnPassant(fromX, fromY, toX, toY, color); // en-passant
+    } else {
+        return ((fromX == toX && toY == fromY + 1) || (fromX == toX && toY == fromY + 2 && fromY == 1)) || // straight move
+               (board[toY][toX].color == 'white' && Math.abs(fromX - toX) == 1 && toY == fromY + 1) || // capture
+               isEnPassant(fromX, fromY, toX, toY, color);  // en-passant
     }
 }
 
@@ -486,7 +476,7 @@ function isLongCastle(fromX, fromY, toX, toY) {
     }
 }
 
-function generateKnightMoves(fromX, fromY) {
+function countKnightMoves(fromX, fromY) {
     moves = 0;
 
     if (legalMove(fromX, fromY, fromX + 2, fromY + 1, 'knight', turn)) moves++; 
@@ -501,7 +491,7 @@ function generateKnightMoves(fromX, fromY) {
     return moves;
 }
 
-function generateStraightMoves(fromX, fromY) {
+function countStraightMoves(fromX, fromY) {
     moves = 0;
     let type = board[fromY][fromX].type; 
 
@@ -524,7 +514,7 @@ function generateStraightMoves(fromX, fromY) {
     return moves++;
 }
 
-function generateDiagonalMoves(fromX, fromY) {
+function countDiagonalMoves(fromX, fromY) {
     let moves = 0, dx, dy;
     let type = board[fromY][fromX].type; 
 
@@ -552,7 +542,7 @@ function generateDiagonalMoves(fromX, fromY) {
     return moves;
 }
 
-function generatePawnMoves(fromX, fromY) {
+function countPawnMoves(fromX, fromY) {
     let moves = 0;
 
     if(turn == 'white') {
@@ -570,7 +560,7 @@ function generatePawnMoves(fromX, fromY) {
     return moves;
 }
 
-function generateKingMoves(fromX, fromY) {
+function countKingMoves(fromX, fromY) {
     let moves = 0;
     
     for(let dx = -1; dx <= 1; ++dx) {
@@ -584,33 +574,35 @@ function generateKingMoves(fromX, fromY) {
     return moves;
 }
 
-function generateMoves() {
+function countMoves() {
     let moves = 0
 
     for(let x = 0; x < ROWS; x++) {
         for(let y = 0; y < COLS; y++) {
+            // if (moves > 0) return moves;
+
             color = board[y][x].color;
 
             if(turn == color){
                 type = board[y][x].type;
                 switch(type) {
                     case 'pawn':
-                        moves += generatePawnMoves(x, y);
+                        moves += countPawnMoves(x, y);
                         break;
                     case 'bishop':
-                        moves += generateDiagonalMoves(x, y);
+                        moves += countDiagonalMoves(x, y);
                         break;
                     case 'knight':
-                        moves += generateKnightMoves(x, y);
+                        moves += countKnightMoves(x, y);
                         break;
                     case 'rook':
-                        moves += generateStraightMoves(x, y);
+                        moves += countStraightMoves(x, y);
                         break;
                     case 'queen':
-                        moves += (generateDiagonalMoves(x, y) + generateStraightMoves(x, y));
+                        moves += (countDiagonalMoves(x, y) + countStraightMoves(x, y));
                         break;
                     case 'king':
-                        moves += generateKingMoves(x, y);
+                        moves += countKingMoves(x, y);
                         break;
                 }
             }
@@ -627,7 +619,10 @@ function legalMove(fromX, fromY, toX, toY, type, color) {
     if(isInTurn(color) && isMoving(fromX, fromY, toX, toY) && inBounds(toX, toY)) {
         switch(type) {
             case 'pawn':
-                isLegal = isPawnMove(fromX, fromY, toX, toY, color) && !isBlocked(fromX, fromY, toX, toY, 'straight');
+                isLegal = isPawnMove(fromX, fromY, toX, toY, color);
+                if(fromX == toX) isLegal &= !isBlocked(fromX, fromY, toX, toY, 'straight');
+                else             isLegal &= !isBlocked(fromX, fromY, toX, toY, 'diagonal');
+
                 break;
             case 'bishop':
                 isLegal = isDiagonalMove(fromX, fromY, toX, toY) && !isBlocked(fromX, fromY, toX, toY, 'diagonal');
@@ -675,12 +670,10 @@ function legalMove(fromX, fromY, toX, toY, type, color) {
 }
 
 function hasMoves() {
-    return generateMoves() > 0;
+    return countMoves() > 0;
 }
 
 function movePiece(fromX, fromY, toX, toY) {
-    let kingX, kingY;
-    
     if(superMode) {
         alert("BOOOOOOOOOOOOOOOOOOOM");
         board[toY][toX] = board[fromY][fromX];
@@ -689,32 +682,30 @@ function movePiece(fromX, fromY, toX, toY) {
         if(legalMove(fromX, fromY, toX, toY, board[fromY][fromX].type, board[fromY][fromX].color)) {
             commitMove(fromX, fromY, toX, toY, board);
             
-            
-            if (turn == 'white') {
-                turn = 'black';
-            } else {
-                turn = 'white';
-            }
-        }
-                
-        if(!hasMoves()) {
-            if (turn == 'white') {
-                if(inCheck(whiteKingPos.x, whiteKingPos.y, board)) {
-                    alert('Black won by checkmate!!');
-                } else {
-                    alert('Draw by Stalemate');
-                }
-            } else {
-                if(inCheck(blackKingPos.x, blackKingPos.y, board)) {
-                    alert('White won by checkmate!!');
-                } else {
-                    alert('Draw by Stalemate');                    
-                }
-            }
-            
-            playing = false;
-        }
+            if(turn == 'white') turn = 'black';
+            else                turn = 'white';
 
+            if(!hasMoves()) {
+                if (turn == 'white') {
+                    let testBoard = board.map(L => L.slice());
+                    if(inCheck(whiteKingPos.x, whiteKingPos.y, testBoard)) {
+                        alert('Black won by checkmate!!');
+                    } else {
+                        alert('Draw by Stalemate');
+                    }
+                } else {
+                    let testBoard = board.map(L => L.slice());
+                    if(inCheck(blackKingPos.x, blackKingPos.y, testBoard)) {
+                        alert('White won by checkmate!!');
+                    } else {
+                        alert('Draw by Stalemate');                    
+                    }
+                }
+                
+                playing = false;
+            }
+        }
+        
         render();
     }
 }
@@ -733,8 +724,8 @@ function init() {
 
     turn = 'white';
     playing = true;
-    isEnPassant = false;
-    isPromotion = false;
+    superMode = false;
+    moveNumber = 0;
     whiteCanShortCastle = true, blackCanShortCastle = true;
     whiteCanLongCastle = true, blackCanLongCastle = true;
     lastMove = {
