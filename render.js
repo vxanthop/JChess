@@ -184,6 +184,12 @@ function moveBuilder(move) {
 
     moveString += squareToAlgebraic[move.toY][move.toX];
 
+    
+    if(move.isPromotion) {
+        moveString += '=';
+        moveString += pieceToAlgebraic[board[move.toY][move.toX].type];
+    }
+
     return moveString;
 }
 

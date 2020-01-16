@@ -39,7 +39,7 @@ let lastMove = {
     isCapture: false,
     isShortCastle: false,
     isLongCastle: false,
-    isPromotion: false
+    isPromotion: false,
 };
 
 function inBounds(x, y) {
@@ -161,6 +161,15 @@ function commitMove(fromX, fromY, toX, toY) {
         blackKingPos.y = toY;
     }
     
+    if(_isEnPassant) board[lastMove.toY][lastMove.toX] = EM;
+
+    if(_isPromotion) {
+        selection = renderPromotionMenu(fromX, fromY);
+        board[toY][toX] = selection;
+    } else {
+        board[toY][toX] = board[fromY][fromX];
+    }
+
     lastMove.fromX = fromX;
     lastMove.fromY = fromY;
     lastMove.toX = toX;
@@ -169,18 +178,7 @@ function commitMove(fromX, fromY, toX, toY) {
     lastMove.isCapture = isCapture(fromX, fromY, toX, toY) || _isEnPassant;
     lastMove.isEnPassant = isEnPassant(fromX, fromY, toX, toY, color);
     lastMove.isPromotion = _isPromotion;
-
-    if(_isEnPassant) board[lastMove.toY][lastMove.toX] = EM;
-
-    if(_isPromotion) {
-        selection = renderPromotionMenu(fromX, fromY);
-        board[toY][toX] = selection;
-        lastMove.isPromotion = true;
-        isPromotion = false;
-    } else {
-        board[toY][toX] = board[fromY][fromX];
-    }
-
+    
     board[fromY][fromX] = EM;
 
     renderScoresheet(lastMove, moveNumber);
@@ -675,7 +673,6 @@ function hasMoves() {
 
 function movePiece(fromX, fromY, toX, toY) {
     if(superMode) {
-        alert("BOOOOOOOOOOOOOOOOOOOM");
         board[toY][toX] = board[fromY][fromX];
         board[fromY][fromX] = EM;
     } else if(playing) {
