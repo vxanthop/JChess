@@ -416,7 +416,7 @@ function isEnPassant(fromX, fromY, toX, toY, color) {
         if(color == 'white') {
             return lastMove.piece == BP && lastMove.toY - lastMove.fromY == 2 && lastMove.fromX == lastMove.toX && lastMove.toY == toY + 1;
         } else {
-            return lastMove.piece == BP && lastMove.fromY - lastMove.toY == 2 && lastMove.fromX == lastMove.toX && lastMove.toY == toY - 1;
+            return lastMove.piece == WP && lastMove.fromY - lastMove.toY == 2 && lastMove.fromX == lastMove.toX && lastMove.toY == toY - 1;
         }
     }
 }
