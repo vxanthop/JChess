@@ -195,10 +195,8 @@ function moveBuilder(move) {
 
     if(move.isCheckMate) {
         moveString += '#';
-    }
-
-    if(move.isStaleMate) {
-        moveString += '=';
+    } else if (move.isCheck) {
+        moveString += '+';
     }
 
     return moveString;

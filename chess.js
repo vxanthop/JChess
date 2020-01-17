@@ -40,6 +40,7 @@ let lastMove = {
     isShortCastle: false,
     isLongCastle: false,
     isPromotion: false,
+    isCheck: false,
     isCheckMate: false,
     isStaleMate: false
 };
@@ -108,7 +109,7 @@ function isCapture(fromX, fromY, toX, toY) {
 }
 
 function commitMove(fromX, fromY, toX, toY) {
-    let color = board[fromY][fromX].color, _isEnPassant, _isPromotion; 
+    let color = board[fromY][fromX].color, _isEnPassant, _isPromotion, _isCheck; 
 
     if(isShortCastle(fromX, fromY, toX, toY)) {
         if (color == 'white'){
@@ -175,6 +176,14 @@ function commitMove(fromX, fromY, toX, toY) {
         board[toY][toX] = board[fromY][fromX];
     }
 
+    if (turn == 'white') {
+        let testBoard = board.map(L => L.slice());
+        _isCheck = inCheck(blackKingPos.x, blackKingPos.y, testBoard);
+    } else {
+        let testBoard = board.map(L => L.slice());
+        _isCheck = inCheck(whiteKingPos.x, whiteKingPos.y, testBoard);
+    }
+
     
     lastMove.fromX = fromX;
     lastMove.fromY = fromY;
@@ -184,6 +193,7 @@ function commitMove(fromX, fromY, toX, toY) {
     lastMove.isCapture = isCapture(fromX, fromY, toX, toY) || _isEnPassant;
     lastMove.isEnPassant = isEnPassant(fromX, fromY, toX, toY, color);
     lastMove.isPromotion = _isPromotion;
+    lastMove.isCheck = _isCheck;
     
     board[fromY][fromX] = EM;
 
@@ -194,26 +204,18 @@ function commitMove(fromX, fromY, toX, toY) {
     }
 
     if(!hasMoves()) {
-        if (turn == 'white') {
-            let testBoard = board.map(L => L.slice());
-            if(inCheck(whiteKingPos.x, whiteKingPos.y, testBoard)) {
-                lastMove.isCheckMate = true;
+        if(_isCheck) {
+            lastMove.isCheckMate = true;
+            if(turn == 'white') {
                 alert('Black won by checkmate!!');
-            } else {
-                lastMove.isStaleMate = true;
-                alert('Draw by Stalemate');
+            } else{
+                alert('White won by checkmate!!');
             }
         } else {
-            let testBoard = board.map(L => L.slice());
-            if(inCheck(blackKingPos.x, blackKingPos.y, testBoard)) {
-                lastMove.isCheckMate = true;
-                alert('White won by checkmate!!');
-            } else {
-                lastMove.isStaleMate = true;
-                alert('Draw by Stalemate');                    
-            }
+            lastMove.isStaleMate = true;
+            alert('Draw by Stalemate');
         }
-        
+
         playing = false;
     }
 
