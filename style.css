@@ -1,3 +1,7 @@
+body.super-mode {
+    background: radial-gradient(circle at center, hsl(0, 100%, 50%), hsl(20, 100%, 50%), hsl(40, 100%, 50%), hsl(60, 100%, 50%), hsl(80, 100%, 50%), hsl(100, 100%, 50%), hsl(120, 100%, 50%), hsl(140, 100%, 50%), hsl(160, 100%, 50%), hsl(180, 100%, 50%), hsl(200, 100%, 50%), hsl(220, 100%, 50%), hsl(240, 100%, 50%), hsl(255, 100%, 50%));
+}
+
 button {
     background-color: black; 
     border: none;
@@ -31,6 +35,10 @@ tr:nth-child(even) {
 }
 
 .wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     text-align: center;
     padding: 10px;
     overflow: hidden;
@@ -50,19 +58,19 @@ caption {
     border-radius: 100%;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
+    /* display: inline-block; */
     font-size: 50px;
 }
 
 #scoresheet {
-    width: 600; 
-    height: 600;
-    float: right;
+    width: 600px; 
+    /* height: 600px; */
+    /* float: right; */
     margin-right: 50px;
 }
 
 #board {
-    float:left;
+    /* float:left; */
 }
 
 #myCanvas {

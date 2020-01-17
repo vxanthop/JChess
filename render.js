@@ -199,8 +199,10 @@ function renderScoresheet(move, moveNumber) {
         j = Math.floor((moveNumber) % 2) + 3 * Math.floor(moveNumber / 40);
         
         moveString = moveBuilder(move);
-
-
+        
+        if(superMode) {
+            moveString = 'BOOM';
+        }
 
         scoreSheet.rows[i + 1].cells[j + 1].innerHTML = moveString;
     }
@@ -262,6 +264,7 @@ function activateSuperMode() {
     alert("BOOOOOOOOOOOOOOOM");
     
     superMode = true;
+    document.body.classList.add('super-mode');
 }
 
 BRIcon.onload = function () {

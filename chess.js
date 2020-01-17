@@ -678,6 +678,8 @@ function movePiece(fromX, fromY, toX, toY) {
     if(superMode) {
         board[toY][toX] = board[fromY][fromX];
         board[fromY][fromX] = EM;
+        renderScoresheet(lastMove, moveNumber);
+        moveNumber++;
     } else if(playing) {
         if(legalMove(fromX, fromY, toX, toY, board[fromY][fromX].type, board[fromY][fromX].color)) {
             commitMove(fromX, fromY, toX, toY, board);
