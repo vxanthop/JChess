@@ -8,6 +8,9 @@ const resetButton = document.getElementById('reset');
 const clearButton = document.getElementById('clear');
 
 const scoreSheet = document.getElementById('myTable')
+const infoTable = document.getElementById('info')
+
+let pgn = "";
 
 let canDrag = false;
 let currentMove = {
@@ -190,6 +193,14 @@ function moveBuilder(move) {
         moveString += pieceToAlgebraic[board[move.toY][move.toX].type];
     }
 
+    if(move.isCheckMate) {
+        moveString += '#';
+    }
+
+    if(move.isStaleMate) {
+        moveString += '=';
+    }
+
     return moveString;
 }
 
@@ -204,8 +215,62 @@ function renderScoresheet(move, moveNumber) {
             moveString = 'BOOM';
         }
 
+        if(move.isCheckMate) {
+            if(turn == 'white') {
+                infoTable.rows[1].cells[2].innerHTML = '0';
+                infoTable.rows[2].cells[2].innerHTML = '1';
+            } else {
+                infoTable.rows[1].cells[2].innerHTML = '1';
+                infoTable.rows[2].cells[2].innerHTML = '0';
+            }
+        }
+
+        if(move.isStaleMate) {
+            infoTable.rows[1].cells[2].innerHTML = '1/2';
+            infoTable.rows[2].cells[2].innerHTML = '1/2';
+        }
+
         scoreSheet.rows[i + 1].cells[j + 1].innerHTML = moveString;
     }
+}
+
+function addToPgn(move, moveNumber) {
+    if(!superMode) {
+        moveString = moveBuilder(move);
+
+        if(moveNumber % 2 == 0) {
+            pgn += ((moveNumber / 2 + 1)  + '. ');
+        }
+
+        pgn += (moveString + ' ');
+
+        if(move.isCheckMate) {
+            if(turn == 'white'){
+                pgn += '0-1';
+            } else {
+                pgn += '1-0';
+            }
+        }
+
+        if(move.isStaleMate) {
+            pgn += '1/2-1/2';
+        }
+    }
+}
+
+// function makePgnHeader() {
+//     [Event "F/S Return Match"] 
+//     [Site "Belgrade, Serbia JUG"] 
+//     [Date "1992.11.04"] 
+//     [Round "29"] 
+//     [White "Fischer, Robert J."]
+//     [Black "Spassky, Boris V."] 
+//     [Result "1/2-1/2"] 
+// }
+
+
+function showPgn() {
+    console.log(pgn);
 }
 
 function resetScoresheet() {

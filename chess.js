@@ -40,6 +40,8 @@ let lastMove = {
     isShortCastle: false,
     isLongCastle: false,
     isPromotion: false,
+    isCheckMate: false,
+    isStaleMate: false
 };
 
 function inBounds(x, y) {
@@ -173,6 +175,7 @@ function commitMove(fromX, fromY, toX, toY) {
         board[toY][toX] = board[fromY][fromX];
     }
 
+    
     lastMove.fromX = fromX;
     lastMove.fromY = fromY;
     lastMove.toX = toX;
@@ -184,7 +187,38 @@ function commitMove(fromX, fromY, toX, toY) {
     
     board[fromY][fromX] = EM;
 
+    if(turn == 'white') {
+        turn = 'black';
+    } else{
+        turn = 'white';
+    }
+
+    if(!hasMoves()) {
+        if (turn == 'white') {
+            let testBoard = board.map(L => L.slice());
+            if(inCheck(whiteKingPos.x, whiteKingPos.y, testBoard)) {
+                lastMove.isCheckMate = true;
+                alert('Black won by checkmate!!');
+            } else {
+                lastMove.isStaleMate = true;
+                alert('Draw by Stalemate');
+            }
+        } else {
+            let testBoard = board.map(L => L.slice());
+            if(inCheck(blackKingPos.x, blackKingPos.y, testBoard)) {
+                lastMove.isCheckMate = true;
+                alert('White won by checkmate!!');
+            } else {
+                lastMove.isStaleMate = true;
+                alert('Draw by Stalemate');                    
+            }
+        }
+        
+        playing = false;
+    }
+
     renderScoresheet(lastMove, moveNumber);
+    addToPgn(lastMove, moveNumber);
     moveNumber++;
 }
 
@@ -435,11 +469,11 @@ function isPromotion(fromX, fromY, toX, toY, color) {
 
 function isPawnMove(fromX, fromY, toX, toY, color) {
     if(color == 'white') {
-        return ((fromX == toX && toY == fromY - 1) || (fromX == toX && toY == fromY - 2 && fromY == 6)) || // straight move
+        return (board[toY][toX] == EM && ((fromX == toX && toY == fromY - 1) || (fromX == toX && toY == fromY - 2 && fromY == 6))) || // straight move
                (board[toY][toX].color == 'black' && Math.abs(fromX - toX) == 1 && toY == fromY - 1) || // capture
                isEnPassant(fromX, fromY, toX, toY, color); // en-passant
     } else {
-        return ((fromX == toX && toY == fromY + 1) || (fromX == toX && toY == fromY + 2 && fromY == 1)) || // straight move
+        return (board[toY][toX] == EM && ((fromX == toX && toY == fromY + 1) || (fromX == toX && toY == fromY + 2 && fromY == 1))) || // straight move
                (board[toY][toX].color == 'white' && Math.abs(fromX - toX) == 1 && toY == fromY + 1) || // capture
                isEnPassant(fromX, fromY, toX, toY, color);  // en-passant
     }
@@ -683,29 +717,6 @@ function movePiece(fromX, fromY, toX, toY) {
     } else if(playing) {
         if(legalMove(fromX, fromY, toX, toY, board[fromY][fromX].type, board[fromY][fromX].color)) {
             commitMove(fromX, fromY, toX, toY, board);
-            
-            if(turn == 'white') turn = 'black';
-            else                turn = 'white';
-
-            if(!hasMoves()) {
-                if (turn == 'white') {
-                    let testBoard = board.map(L => L.slice());
-                    if(inCheck(whiteKingPos.x, whiteKingPos.y, testBoard)) {
-                        alert('Black won by checkmate!!');
-                    } else {
-                        alert('Draw by Stalemate');
-                    }
-                } else {
-                    let testBoard = board.map(L => L.slice());
-                    if(inCheck(blackKingPos.x, blackKingPos.y, testBoard)) {
-                        alert('White won by checkmate!!');
-                    } else {
-                        alert('Draw by Stalemate');                    
-                    }
-                }
-                
-                playing = false;
-            }
         }
         
         render();
@@ -726,7 +737,6 @@ function init() {
 
     turn = 'white';
     playing = true;
-    superMode = false;
     moveNumber = 0;
     whiteCanShortCastle = true, blackCanShortCastle = true;
     whiteCanLongCastle = true, blackCanLongCastle = true;
@@ -739,7 +749,9 @@ function init() {
         isCapture: false,
         isShortCastle: false,
         isLongCastle: false,
-        isPromotion: false
+        isPromotion: false,
+        isCheckMate: false,
+        isStaleMate: false
     };
     whiteKingPos = {
         x: 4,

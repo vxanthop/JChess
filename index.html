@@ -15,15 +15,33 @@
                 <canvas id="myCanvas" width='600' height='600'></canvas>
                 <button onclick="resetPosition()" id="reset"> Start </button>
                 <button onclick="clearPosition()" id="clear"> Clear </button>
+                <button onclick="showPgn()" id="pgn"> Pgn </button>
             </div>
 
-            <button onclick="activateSuperMode()" id="big_red_button">
-                SUPER MODE
-            </button>
+            <button onclick="activateSuperMode()" id="big_red_button">SUPER MODE</button>
 
             <div id="scoresheet">
-                <table id="myTable">
+                
+                <table id="info">
                     <caption>Scoresheet</caption>
+                    <tr>
+                        <th>Name</th>
+                        <th>Elo</th>
+                        <th>Result</th>
+                    </tr>
+                    <tr>
+                        <td id="player">Vilaras</td>
+                        <td id="Elo">1000</td>
+                        <td id="result"></td>
+                    </tr>
+                    <tr>
+                        <td id="player">Vilaras</td>
+                        <td id="Elo">1000</td>
+                        <td id="result"></td>
+                    </tr>
+                </table>
+
+                <table id="myTable">
                     <tr>
                         <th>No</th>
                         <th>White</th>

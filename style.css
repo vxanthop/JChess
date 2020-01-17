@@ -2,6 +2,11 @@ body.super-mode {
     background: radial-gradient(circle at center, hsl(0, 100%, 50%), hsl(20, 100%, 50%), hsl(40, 100%, 50%), hsl(60, 100%, 50%), hsl(80, 100%, 50%), hsl(100, 100%, 50%), hsl(120, 100%, 50%), hsl(140, 100%, 50%), hsl(160, 100%, 50%), hsl(180, 100%, 50%), hsl(200, 100%, 50%), hsl(220, 100%, 50%), hsl(240, 100%, 50%), hsl(255, 100%, 50%));
 }
 
+caption {
+    font-weight: 900;
+    margin-bottom: 10px;
+}
+
 button {
     background-color: black; 
     border: none;
@@ -44,12 +49,6 @@ tr:nth-child(even) {
     overflow: hidden;
 }
 
-caption {
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 900;
-    margin-bottom: 10px;
-}
-
 #big_red_button {
     background-color: red;
     color: black;
@@ -69,12 +68,11 @@ caption {
     margin-right: 50px;
 }
 
-#board {
-    /* float:left; */
-}
-
 #myCanvas {
     display: block;
     margin: auto;
 }
 
+#player {
+    text-align: left;
+}
