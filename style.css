@@ -27,8 +27,11 @@ table {
   
 td, th {
     border: 1px solid #dddddd;
-    text-align: center;
     padding: 8px;
+}
+
+#player-text {
+    text-align: left;
 }
 
 .numbering {
@@ -37,6 +40,22 @@ td, th {
 
 tr:nth-child(even) {
     background-color: #dddddd;
+}
+
+.white-box {
+    width:20px;
+    height: 20px;
+    margin: 5px;
+    background: white;
+    float:left;
+}
+
+.black-box {
+    width:20px;
+    height: 20px;
+    margin: 5px;
+    background: black;
+    float:left;
 }
 
 .wrapper {

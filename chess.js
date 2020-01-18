@@ -37,7 +37,7 @@ let lastMove = {
     toX: 0,
     toY: 0,
     piece: EM,
-    isCapture: false,
+    isCapture: false, 
     isShortCastle: false,
     isLongCastle: false,
     isPromotion: false,
@@ -154,14 +154,6 @@ function commitMove(fromX, fromY, toX, toY) {
     _isPromotion = isPromotion(fromX, fromY, toX, toY, color, board);
     _isCapture = isCapture(fromX, fromY, toX, toY, board);
 
-    if (turn == 'white') {
-        let testBoard = board.map(L => L.slice());
-        _isCheck = inCheck(blackKingPos.x, blackKingPos.y, testBoard);
-    } else {
-        let testBoard = board.map(L => L.slice());
-        _isCheck = inCheck(whiteKingPos.x, whiteKingPos.y, testBoard);
-    }
-
 
     if(fromY == 0 && fromX == 0) blackCanLongCastle = false;
     else if(fromY == 0 && fromX == 7) blackCanShortCastle = false;
@@ -190,6 +182,14 @@ function commitMove(fromX, fromY, toX, toY) {
     }
 
     board[fromY][fromX] = EM;
+
+    if (turn == 'white') {
+        let testBoard = board.map(L => L.slice());
+        _isCheck = inCheck(blackKingPos.x, blackKingPos.y, testBoard);
+    } else {
+        let testBoard = board.map(L => L.slice());
+        _isCheck = inCheck(whiteKingPos.x, whiteKingPos.y, testBoard);
+    }
 
     lastMove.fromX = fromX;
     lastMove.fromY = fromY;
