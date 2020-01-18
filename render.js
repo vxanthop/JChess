@@ -166,6 +166,97 @@ function mouseDown(x, y) {
     lastIcon = selectIcon(modelCoords.x, modelCoords.y);
 }
 
+function sameDestination(move1) {
+    return function(move2) {
+        return move1.toX == move2.toX &&
+               move1.toY == move2.toY;
+    }
+}
+
+function moveDisambiguation(move) {
+    // bishop option for when a same color bishop has been promoted
+    let type = move.piece.type;
+    let moves = [];
+
+    switch(type) {
+        case 'rook':
+            for(let x = 0; x < ROWS; x++) {
+                for(let y = 0; y < COLS; y++) {
+                    if(oldBoard[y][x] == move.piece && (move.fromX != x || move.fromY != y))
+                        moves = moves.concat(generateStraightMoves(x, y, oldBoard));
+                }
+            }
+            break;
+
+        case 'queen':
+            for(let x = 0; x < ROWS; x++) {
+                for(let y = 0; y < COLS; y++) {
+                    if(oldBoard[y][x] == move.piece && (move.fromX != x || move.fromY != y)){
+                        moves = moves.concat(generateStraightMoves(x, y, oldBoard));
+                        moves = moves.concat(generateDiagonalMoves(x, y, oldBoard));
+                    }
+                }
+            }
+            break;
+
+        case 'knight':
+            for(let x = 0; x < ROWS; x++) {
+                for(let y = 0; y < COLS; y++) {
+                    if(oldBoard[y][x] == move.piece && (move.fromX != x || move.fromY != y))
+                        moves = moves.concat(generateKnightMoves(x, y, oldBoard));
+                }
+            }
+            break;
+
+        case 'bishop':
+            for(let x = 0; x < ROWS; x++) {
+                for(let y = 0; y < COLS; y++) {
+                    if(oldBoard[y][x] == move.piece && (move.fromX != x || move.fromY != y))
+                        moves = moves.concat(generateDiagonalMoves(x, y, oldBoard));
+                }
+            }
+            break;
+
+        default: 
+            return ''
+    }
+
+    disambiguationString = ''
+
+    moves = moves.filter(sameDestination(move));
+    for(let i = 0; i < moves.length; ++i) {
+        if(moves[i].fromX == move.fromX){
+            disambiguationString += squareToAlgebraic[move.fromY][move.fromX].charAt(1);
+            break;
+        }
+    }
+    
+    for(let i = 0; i < moves.length; ++i) {
+        if(moves[i].fromY == move.fromY) {
+            disambiguationString += squareToAlgebraic[move.fromY][move.fromX].charAt(0);
+            break;
+        }
+    }
+    
+    if(type == 'knight' && disambiguationString == '' && moves.length > 0) {
+        disambiguationString += squareToAlgebraic[move.fromY][move.fromX].charAt(0);
+    }
+
+    if(type == 'queen' && disambiguationString == '' && moves.length > 0) {
+        disambiguationString += squareToAlgebraic[move.fromY][move.fromX];
+    }
+
+    if(type == 'bishop' && disambiguationString == '' && moves.length > 0) {
+        disambiguationString += squareToAlgebraic[move.fromY][move.fromX].charAt(0);
+    }
+
+    if(type == 'rook' && disambiguationString == '' && moves.length > 0) {
+        disambiguationString += squareToAlgebraic[move.fromY][move.fromX].charAt(0);
+    }
+
+    return disambiguationString;
+}
+
 function moveBuilder(move) {
     if(move.isShortCastle) {
         return 'o-o';
@@ -177,10 +268,13 @@ function moveBuilder(move) {
 
     moveString = '';
     moveString += pieceToAlgebraic[move.piece.type];
+    moveString += moveDisambiguation(move);
+
 
     if(move.isCapture) {
-        if(move.piece.type == 'pawn')
+        if(move.piece.type == 'pawn') {
             moveString += squareToAlgebraic[move.fromY][move.fromX].charAt(0);
+        }
     
         moveString += 'x';
     }
@@ -203,7 +297,7 @@ function moveBuilder(move) {
 }
 
 function renderScoresheet(move, moveNumber) {
-    if(moveNumber < 60) {   
+    if(moveNumber < 120) {   
         i = Math.floor(moveNumber / 2) % 20;
         j = Math.floor((moveNumber) % 2) + 3 * Math.floor(moveNumber / 40);
         
@@ -312,17 +406,17 @@ function render() {
 }
 
 function activateSuperMode() {
-    WPIcon.src = 'images/todo.png';
+    WPIcon.src = 'images/stelios.png';
     BPIcon.src = 'images/kostas.png';
-    WNIcon.src = 'images/todo.png';
+    WNIcon.src = 'images/stelios.png';
     BNIcon.src = 'images/kostas.png';
-    WBIcon.src = 'images/todo.png';
+    WBIcon.src = 'images/stelios.png';
     BBIcon.src = 'images/kostas.png';
-    WQIcon.src = 'images/todo.png';
+    WQIcon.src = 'images/stelios.png';
     BQIcon.src = 'images/kostas.png';
-    WKIcon.src = 'images/todo.png';
+    WKIcon.src = 'images/stelios.png';
     BKIcon.src = 'images/kostas.png';
-    WRIcon.src = 'images/todo.png';
+    WRIcon.src = 'images/stelios.png';
     BRIcon.src = 'images/kostas.png';    
     alert("BOOOOOOOOOOOOOOOM");
     
