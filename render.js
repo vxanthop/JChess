@@ -17,7 +17,7 @@ let pgn = {
     Round : '1',
     White : 'Vilaras',
     Black : 'Vilaras',
-    Result : '',
+    Result : '*',
     Moves: ''
 };
 
@@ -183,7 +183,6 @@ function sameDestination(move1) {
 }
 
 function moveDisambiguation(move) {
-    // bishop option for when a same color bishop has been promoted
     let type = move.piece.type;
     let color = move.piece.color;
     let moves = [];
@@ -409,8 +408,16 @@ function resetScoresheet() {
 }
 
 function resetPgn() {
-    pgn = '';
-}
+    pgn = {
+        Event: 'Final of Finals.com demonstration analytics occupation',
+        Site : 'Nikaia Osia Kseni Square',
+        Date : '1500.12.12',
+        Round : '1',
+        White : 'Vilaras',
+        Black : 'Vilaras',
+        Result : '*',
+        Moves: ''
+    };}
 
 function mouseMove(){
     if (canDrag){

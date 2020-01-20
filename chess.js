@@ -312,7 +312,9 @@ function isKingMove(fromX, fromY, toX, toY) {
 
 function inCheckDiagonal(color, myBoard) {
     let enemyBishop, enemyQueen, kingX, kingY;
-    let dx, dy;
+    let dirsX = [1, -1, 1, -1],
+        dirsY = [1, 1, -1, -1];
+        
     if(color == 'white') {
         kingX = whiteKingPos.x
         kingY = whiteKingPos.y
@@ -325,45 +327,22 @@ function inCheckDiagonal(color, myBoard) {
         enemyQueen = WQ;
     }
 
-
-    dx = 1, dy = 1;
-    for(let tempX = kingX + dx, tempY = kingY + dy; inBounds(tempX, tempY); tempX += dx, tempY += dy) {
-        piece = myBoard[tempY][tempX];
-        if (piece == EM) continue;
-        else if(piece == enemyBishop || piece == enemyQueen) return true;
-        else break;
+    for(let i=0; i < dirsX.length; ++i) {
+        for(let tempX = kingX + dirsX[i], tempY = kingY + dirsY[i]; inBounds(tempX, tempY); tempX += dirsX[i], tempY += dirsY[i]) {
+            piece = myBoard[tempY][tempX];
+            if (piece == EM) continue;
+            else if(piece == enemyBishop || piece == enemyQueen) return true;
+            else break;
+        }
     }
-
-    dx = -1, dy = 1;
-    for(let tempX = kingX + dx, tempY = kingY + dy; inBounds(tempX, tempY); tempX += dx, tempY += dy) {
-        piece = myBoard[tempY][tempX];
-        if (piece == EM) continue;
-        else if(piece == enemyBishop || piece == enemyQueen) return true;
-        else break;
-    }
-
-    dx = 1, dy = -1;
-    for(let tempX = kingX + dx, tempY = kingY + dy; inBounds(tempX, tempY); tempX += dx, tempY += dy) {
-        piece = myBoard[tempY][tempX];
-        if (piece == EM) continue;
-        else if(piece == enemyBishop || piece == enemyQueen) return true;
-        else break;
-    }
-
-    dx = -1, dy = -1;
-    for(let tempX = kingX + dx, tempY = kingY + dy; inBounds(tempX, tempY); tempX += dx, tempY += dy) {
-        piece = myBoard[tempY][tempX];
-        if (piece == EM) continue;
-        else if(piece == enemyBishop || piece == enemyQueen) return true;
-        else break;
-    }
-
 
     return false;
 }
 
 function inCheckStraight(color, myBoard) {
     let kingX, kingY, enemyRook, enemyQueen;
+    let dirsX = [1, -1, 0, 0],
+        dirsY = [0, 0, -1, 1];
 
     if(color == 'white') {
         enemyRook = BR;
@@ -375,34 +354,15 @@ function inCheckStraight(color, myBoard) {
         enemyQueen = WQ;
         kingX = blackKingPos.x
         kingY = blackKingPos.y
-    }
+    }                    
 
-    for(let tempX = kingX + 1; tempX < COLS; ++tempX) {
-        piece = myBoard[kingY][tempX];
-        if (piece == EM) continue;
-        else if(piece == enemyRook || piece == enemyQueen) return true;
-        else break;
-    }
-
-    for(let tempX = kingX - 1; tempX >= 0; --tempX) {
-        piece = myBoard[kingY][tempX];
-        if (piece == EM) continue;
-        else if(piece == enemyRook || piece == enemyQueen) return true;
-        else break;
-    }
-
-    for(let tempY = kingY + 1; tempY < ROWS; ++tempY) {
-        piece = myBoard[tempY][kingX];
-        if (piece == EM) continue;
-        else if(piece == enemyRook || piece == enemyQueen) return true;
-        else break;
-    }
-
-    for(let tempY = kingY - 1; tempY >= 0; --tempY) {
-        piece = myBoard[tempY][kingX];
-        if (piece == EM) continue;
-        else if(piece == enemyRook || piece == enemyQueen) return true;
-        else break;
+    for(let i=0; i < dirsX.length; ++i) {
+        for(let tempX = kingX + dirsX[i], tempY = kingY + dirsY[i]; inBounds(tempX, tempY); tempX += dirsX[i], tempY += dirsY[i]) {
+            piece = myBoard[tempY][tempX];
+            if (piece == EM) continue;
+            else if(piece == enemyRook || piece == enemyQueen) return true;
+            else break;
+        }
     }
 
     return false;
@@ -410,6 +370,7 @@ function inCheckStraight(color, myBoard) {
 
 function inCheckKing(color, myBoard) {
     let enemyKing, kingX, kingY;
+
     if(color == 'white') {
         kingX = whiteKingPos.x
         kingY = whiteKingPos.y
@@ -433,6 +394,8 @@ function inCheckKing(color, myBoard) {
 
 function inCheckKnight(color, myBoard) {
     let kingX, kingY;
+    let dirsX = [2, 2, -2, -2, 1, 1, -1, -1],
+        dirsY = [1, -1, 1, -1, 2, -2, 2, -2];
 
     if(color == 'white') {
         enemyKnight = BN;
@@ -444,14 +407,13 @@ function inCheckKnight(color, myBoard) {
         kingY = blackKingPos.y
     }
     
-    return (inBounds(kingX + 2, kingY + 1) && myBoard[kingY + 1][kingX + 2] == enemyKnight) ||
-           (inBounds(kingX + 2, kingY - 1) && myBoard[kingY - 1][kingX + 2] == enemyKnight) || 
-           (inBounds(kingX - 2, kingY + 1) && myBoard[kingY + 1][kingX - 2] == enemyKnight) ||
-           (inBounds(kingX - 2, kingY - 1) && myBoard[kingY - 1][kingX - 2] == enemyKnight) ||
-           (inBounds(kingX + 1, kingY + 2) && myBoard[kingY + 2][kingX + 1] == enemyKnight) ||
-           (inBounds(kingX + 1, kingY - 2) && myBoard[kingY - 2][kingX + 1] == enemyKnight) ||
-           (inBounds(kingX - 1, kingY + 2) && myBoard[kingY + 2][kingX - 1] == enemyKnight) ||
-           (inBounds(kingX - 1, kingY - 2) && myBoard[kingY - 2][kingX - 1] == enemyKnight);
+    for(let i=0; i < dirsX.length; ++i) {
+        if(inBounds(kingX + dirsX[i], kingY + dirsY[i]) && myBoard[kingY + dirsY[i]][kingX + dirsX[i]] == enemyKnight) {
+            return true;
+        }
+    }
+
+    return false
 }
 
 function inCheckPawn(color, myBoard) {
