@@ -176,6 +176,7 @@ function sameDestination(move1) {
 function moveDisambiguation(move) {
     // bishop option for when a same color bishop has been promoted
     let type = move.piece.type;
+    let color = move.piece.color;
     let moves = [];
 
     switch(type) {
@@ -183,7 +184,7 @@ function moveDisambiguation(move) {
             for(let x = 0; x < ROWS; x++) {
                 for(let y = 0; y < COLS; y++) {
                     if(oldBoard[y][x] == move.piece && (move.fromX != x || move.fromY != y))
-                        moves = moves.concat(generateStraightMoves(x, y, oldBoard));
+                        moves = moves.concat(generateStraightMoves(x, y, color, oldBoard));
                 }
             }
             break;
@@ -192,8 +193,8 @@ function moveDisambiguation(move) {
             for(let x = 0; x < ROWS; x++) {
                 for(let y = 0; y < COLS; y++) {
                     if(oldBoard[y][x] == move.piece && (move.fromX != x || move.fromY != y)){
-                        moves = moves.concat(generateStraightMoves(x, y, oldBoard));
-                        moves = moves.concat(generateDiagonalMoves(x, y, oldBoard));
+                        moves = moves.concat(generateStraightMoves(x, y, color, oldBoard));
+                        moves = moves.concat(generateDiagonalMoves(x, y, color, oldBoard));
                     }
                 }
             }
@@ -203,7 +204,7 @@ function moveDisambiguation(move) {
             for(let x = 0; x < ROWS; x++) {
                 for(let y = 0; y < COLS; y++) {
                     if(oldBoard[y][x] == move.piece && (move.fromX != x || move.fromY != y))
-                        moves = moves.concat(generateKnightMoves(x, y, oldBoard));
+                        moves = moves.concat(generateKnightMoves(x, y, color, oldBoard));
                 }
             }
             break;
@@ -212,7 +213,7 @@ function moveDisambiguation(move) {
             for(let x = 0; x < ROWS; x++) {
                 for(let y = 0; y < COLS; y++) {
                     if(oldBoard[y][x] == move.piece && (move.fromX != x || move.fromY != y))
-                        moves = moves.concat(generateDiagonalMoves(x, y, oldBoard));
+                        moves = moves.concat(generateDiagonalMoves(x, y, color, oldBoard));
                 }
             }
             break;
@@ -372,6 +373,13 @@ function resetScoresheet() {
             
         scoreSheet.rows[i + 1].cells[j + 1].innerHTML = '';
     }
+
+    infoTable.rows[1].cells[2].innerHTML = '';
+    infoTable.rows[2].cells[2].innerHTML = '';
+}
+
+function resetPgn() {
+    pgn = '';
 }
 
 function mouseMove(){
@@ -406,18 +414,18 @@ function render() {
 }
 
 function activateSuperMode() {
-    WPIcon.src = 'images/stelios.png';
-    BPIcon.src = 'images/kostas.png';
-    WNIcon.src = 'images/stelios.png';
-    BNIcon.src = 'images/kostas.png';
-    WBIcon.src = 'images/stelios.png';
-    BBIcon.src = 'images/kostas.png';
-    WQIcon.src = 'images/stelios.png';
-    BQIcon.src = 'images/kostas.png';
-    WKIcon.src = 'images/stelios.png';
-    BKIcon.src = 'images/kostas.png';
-    WRIcon.src = 'images/stelios.png';
-    BRIcon.src = 'images/kostas.png';    
+    WPIcon.src = 'images/todo.png';
+    BPIcon.src = 'images/todo.png';
+    WNIcon.src = 'images/todo.png';
+    BNIcon.src = 'images/todo.png';
+    WBIcon.src = 'images/todo.png';
+    BBIcon.src = 'images/todo.png';
+    WQIcon.src = 'images/todo.png';
+    BQIcon.src = 'images/todo.png';
+    WKIcon.src = 'images/todo.png';
+    BKIcon.src = 'images/todo.png';
+    WRIcon.src = 'images/todo.png';
+    BRIcon.src = 'images/todo.png';    
     alert("BOOOOOOOOOOOOOOOM");
     
     superMode = true;

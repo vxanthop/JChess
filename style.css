@@ -76,14 +76,11 @@ tr:nth-child(even) {
     border-radius: 100%;
     text-align: center;
     text-decoration: none;
-    /* display: inline-block; */
     font-size: 50px;
 }
 
 #scoresheet {
     width: 600px; 
-    /* height: 600px; */
-    /* float: right; */
     margin-right: 50px;
 }
 
