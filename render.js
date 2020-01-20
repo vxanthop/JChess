@@ -10,7 +10,16 @@ const clearButton = document.getElementById('clear');
 const scoreSheet = document.getElementById('myTable')
 const infoTable = document.getElementById('info')
 
-let pgn = "";
+let pgn = {
+    Event: 'Final of Finals.com demonstration analytics occupation',
+    Site : 'Nikaia Osia Kseni Square',
+    Date : '1500.12.12',
+    Round : '1',
+    White : 'Vilaras',
+    Black : 'Vilaras',
+    Result : '',
+    Moves: ''
+};
 
 let canDrag = false;
 let currentMove = {
@@ -332,38 +341,59 @@ function addToPgn(move, moveNumber) {
         moveString = moveBuilder(move);
 
         if(moveNumber % 2 == 0) {
-            pgn += ((moveNumber / 2 + 1)  + '. ');
+            pgn.Moves += ((moveNumber / 2 + 1)  + '. ');
         }
 
-        pgn += (moveString + ' ');
+        pgn.Moves += (moveString + ' ');
 
         if(move.isCheckMate) {
             if(turn == 'white'){
-                pgn += '0-1';
+                pgn.Result += '0-1';
+                pgn.Moves += '0-1';
             } else {
-                pgn += '1-0';
+                pgn.Result += '1-0';
+                pgn.Moves += '1-0';
             }
         }
 
         if(move.isStaleMate) {
-            pgn += '1/2-1/2';
+            pgn.Result += '1/2-1/2';
+            pgn.Moves += '1/2-1/2';
         }
     }
 }
 
-// function makePgnHeader() {
-//     [Event "F/S Return Match"] 
-//     [Site "Belgrade, Serbia JUG"] 
-//     [Date "1992.11.04"] 
-//     [Round "29"] 
-//     [White "Fischer, Robert J."]
-//     [Black "Spassky, Boris V."] 
-//     [Result "1/2-1/2"] 
-// }
+function makePgnFile() {
+    data = ""
+    for (var key in pgn) {
+        if(key == 'Moves') {
+            data += '\n';
+            data += pgn[key];
+        } else {
+            data += '[' + key + ' "' + pgn[key] + '"]\n';
+        }
+    }
+
+    downloadPgn(data)
+}
 
 
-function showPgn() {
-    console.log(pgn);
+function downloadPgn(data) {
+    let file = new Blob([data], {type: 'text/plain'});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, 'game.pgn');
+    else { // Others
+        let a = document.createElement("a"),
+            url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = 'game.pgn';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+    }
 }
 
 function resetScoresheet() {

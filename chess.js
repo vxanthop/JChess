@@ -194,23 +194,24 @@ function commitMove(fromX, fromY, toX, toY) {
         board[toY][toX] = board[fromY][fromX];
     }
 
-    board[fromY][fromX] = EM;
-
-    let testBoard = board.map(L => L.slice());
-    _isCheck = inCheck(oppositeTurn(turn), testBoard);
-
+    
     lastMove.fromX = fromX;
     lastMove.fromY = fromY;
     lastMove.toX = toX;
     lastMove.toY = toY;
-    lastMove.piece = board[toY][toX];
+    lastMove.piece = board[fromY][fromX];
     lastMove.isCapture = _isCapture || _isEnPassant;
     lastMove.isEnPassant = _isEnPassant;
     lastMove.isPromotion = _isPromotion;
     lastMove.isCheck = _isCheck;
+    
+    board[fromY][fromX] = EM;
 
+    let testBoard = board.map(L => L.slice());
+    _isCheck = inCheck(oppositeTurn(turn), testBoard);
+    
     turn = oppositeTurn(turn);
-
+    
     if(!hasMoves(turn, true, board)) {
         if(_isCheck) {
             lastMove.isCheckMate = true;
@@ -841,7 +842,7 @@ function init() {
         [WP, WP, WP, WP, WP, WP, WP, WP],
         [WR, WN, WB, WQ, WK, WB, WN, WR]
     ];
-    
+
     turn = 'white';
     playing = true;
     moveNumber = 0;
