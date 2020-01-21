@@ -7,7 +7,7 @@ let pgn = {
     Black : 'Vilaras',
     Result : '*',
     Moves: ''
-};
+};  
 
 function resetPgn() {
     pgn = {
@@ -80,3 +80,7 @@ function addToPgn(move, moveNumber) {
         }
     }
 }
+
+// function importPgn() {
+
+// }

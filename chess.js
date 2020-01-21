@@ -232,17 +232,75 @@ function commitMove(fromX, fromY, toX, toY) {
         halfMoves++;
     }
 
-    // TODO: Add threefolod repetition and insuficient material
     if(halfMoves >= 50) {
         alert("Game drawn because of the 50 move rule");
         lastMove.drawRule = true; 
         playing = false;
     }
 
+    if(insuficientMaterial()) {
+        alert("Game drawn because of insuficient material");
+        lastMove.drawRule = true;
+        playing = false;
+    }
+
+    // if(threefoldRepetition()) {
+    //     alert("Game drawn because of threefold repetition");
+    //     playing = false;
+    // }
+
     renderScoresheet(lastMove, moveNumber);
     addToPgn(lastMove, moveNumber);
     moveNumber++;
 }
+
+function insuficientMaterial() {
+    let whiteKnights = 0,
+        blackKnights = 0,
+        whiteBishops = 0,
+        blackBishops = 0;
+
+    for(let x = 0; x < COLS; x++) {
+        for(let y = 0; y < ROWS; y++) {
+            if(whiteBishops >= 2 || blackBishops >= 2) {
+                return false
+            } else if(whiteBishops == 1 && whiteKnights >= 1) {
+                return false;
+            } else if(blackBishops == 1 && blackKnights >= 1) {
+                return false
+            } else {    
+                let piece = board[y][x];
+
+                switch(piece.type) {
+                    case 'empty':
+                        continue;
+
+                    case 'king':
+                        continue;
+
+                    case 'bishop':
+                        if(piece.color == 'white') whiteBishops++;
+                        else blackBishops++;
+                        break;
+                        
+                    case 'knight':
+                        if(piece.color == 'white') whiteKnights++;
+                        else blackKnights++;
+                        break; 
+                    
+                    default:
+                        return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+// function threefoldRepetition() {
+
+// }
 
 // Hacky way to figure out direction, must change
 function isBlocked(fromX, fromY, toX, toY, movement, myBoard) {
