@@ -295,32 +295,40 @@ function moveBuilder(move) {
 }
 
 function renderScoresheet(move, moveNumber) {
-    if(moveNumber < 120) {   
-        i = Math.floor(moveNumber / 2) % 20;
-        j = Math.floor((moveNumber) % 2) + 3 * Math.floor(moveNumber / 40);
-        
+    let i,j;
+
+    if(moveNumber <= 60) {   
+        if(move.piece.color == 'white') {
+            i = (moveNumber - 1) % 20 + 1;
+            j = 3 * Math.floor((moveNumber - 1) / 20) + 1;
+        } else {
+            i = (moveNumber - 1) % 20 + 1;
+            j = 3 * Math.floor((moveNumber - 1) / 20) + 2;
+        }
+    
         moveString = moveBuilder(move);
         
         if(superMode) {
             moveString = 'BOOM';
         }
 
-        if(move.isCheckMate) {
-            if(turn == 'white') {
-                infoTable.rows[1].cells[2].innerHTML = '0';
-                infoTable.rows[2].cells[2].innerHTML = '1';
-            } else {
-                infoTable.rows[1].cells[2].innerHTML = '1';
-                infoTable.rows[2].cells[2].innerHTML = '0';
-            }
-        }
+        
+        scoreSheet.rows[i].cells[j].innerHTML = moveString;
+    }
 
-        if(move.isStaleMate || move.drawRule) {
-            infoTable.rows[1].cells[2].innerHTML = '1/2';
-            infoTable.rows[2].cells[2].innerHTML = '1/2';
+    if(move.isCheckMate) {
+        if(turn == 'white') {
+            infoTable.rows[1].cells[2].innerHTML = '1';
+            infoTable.rows[2].cells[2].innerHTML = '0';
+        } else {
+            infoTable.rows[1].cells[2].innerHTML = '0';
+            infoTable.rows[2].cells[2].innerHTML = '1';
         }
+    }
 
-        scoreSheet.rows[i + 1].cells[j + 1].innerHTML = moveString;
+    if(move.isStaleMate || move.drawRule) {
+        infoTable.rows[1].cells[2].innerHTML = '1/2';
+        infoTable.rows[2].cells[2].innerHTML = '1/2';
     }
 }
 

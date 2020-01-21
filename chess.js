@@ -19,11 +19,15 @@ let oldBoard = [];
 let turn = 'white';
 let playing = true;
 let superMode = false;
-let moveNumber = 0;
+let moveNumber = 1;
 let halfMoves = 0;
 let board = [];
 let whiteCanShortCastle = true, blackCanShortCastle = true;
 let whiteCanLongCastle = true, blackCanLongCastle = true;
+let epSquare = {
+    x: -1,
+    y: -1
+};
 let whiteKingPos = {
     x: 4,
     y: 7
@@ -114,6 +118,32 @@ function pseudoCommitMove(fromX, fromY, toX, toY, myBoard) {
         myBoard[lastMove.toY][lastMove.toX] = EM;
     }
 
+    if(turn == 'white') {
+        if(myBoard[fromY][fromX].type == 'pawn' && fromY - toY == 2){
+            epSquare = {
+                x: fromX,
+                y: toY + 1
+            };
+        } else {
+            epSquare = {
+                x: -1,
+                y: -1
+            };
+        }
+    } else {
+        if(myBoard[fromY][fromX].type == 'pawn' && toY - fromY == 2){
+            epSquare = {
+                x: fromX,
+                y: toY - 1
+            };
+        } else {
+            epSquare = {
+                x: -1,
+                y: -1
+            };
+        }
+    }
+
     myBoard[toY][toX] = myBoard[fromY][fromX];  
     myBoard[fromY][fromX] = EM;
 } 
@@ -123,6 +153,7 @@ function isCapture(fromX, fromY, toX, toY, myBoard) {
            myBoard[toY][toX].color != 'empty' && 
            myBoard[fromY][fromX].color != 'empty';
 }
+
 
 function commitMove(fromX, fromY, toX, toY) {
     let color = board[fromY][fromX].color, _isEnPassant, _isPromotion, _isCheck; 
@@ -212,12 +243,10 @@ function commitMove(fromX, fromY, toX, toY) {
     let testBoard = board.map(L => L.slice());
     _isCheck = inCheck(oppositeTurn(turn), testBoard);
     
-    turn = oppositeTurn(turn);
-    
-    if(!hasMoves(turn, true, board)) {
+    if(!hasMoves(oppositeTurn(turn), true, board)) {
         if(_isCheck) {
             lastMove.isCheckMate = true;
-            alert(capitalizeFirstLetter(oppositeTurn(turn)) + ' won by checkmate!!');
+            alert(capitalizeFirstLetter(turn) + ' won by checkmate!!');
         } else {
             lastMove.isStaleMate = true;
             alert('Draw by Stalemate');
@@ -251,7 +280,12 @@ function commitMove(fromX, fromY, toX, toY) {
 
     renderScoresheet(lastMove, moveNumber);
     addToPgn(lastMove, moveNumber);
-    moveNumber++;
+
+    if(turn == 'black') {
+        moveNumber++;
+    }
+    
+    turn = oppositeTurn(turn);
 }
 
 function insuficientMaterial() {
@@ -879,7 +913,7 @@ function init() {
 
     turn = 'white';
     playing = true;
-    moveNumber = 0;
+    moveNumber = 1;
     zhalfMoves = 0;
     whiteCanShortCastle = true, blackCanShortCastle = true;
     whiteCanLongCastle = true, blackCanLongCastle = true;

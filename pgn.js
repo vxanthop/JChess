@@ -58,19 +58,19 @@ function addToPgn(move, moveNumber) {
     if(!superMode) {
         moveString = moveBuilder(move);
 
-        if(moveNumber % 2 == 0) {
-            pgn.Moves += ((moveNumber / 2 + 1)  + '. ');
+        if(turn == 'white') {
+            pgn.Moves += (moveNumber  + '. ');
         }
 
         pgn.Moves += (moveString + ' ');
 
         if(move.isCheckMate) {
             if(turn == 'white'){
-                pgn.Result += '0-1';
-                pgn.Moves += '0-1';
-            } else {
                 pgn.Result += '1-0';
                 pgn.Moves += '1-0';
+            } else {
+                pgn.Result += '0-1';
+                pgn.Moves += '0-1';
             }
         }
 
