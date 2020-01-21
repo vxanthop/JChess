@@ -20,6 +20,7 @@ let turn = 'white';
 let playing = true;
 let superMode = false;
 let moveNumber = 0;
+let halfMoves = 0;
 let board = [];
 let whiteCanShortCastle = true, blackCanShortCastle = true;
 let whiteCanLongCastle = true, blackCanLongCastle = true;
@@ -43,7 +44,8 @@ let lastMove = {
     isPromotion: false,
     isCheck: false,
     isCheckMate: false,
-    isStaleMate: false
+    isStaleMate: false,
+    drawRule: false
 };
 
 function oppositeTurn(_turn) {
@@ -221,6 +223,19 @@ function commitMove(fromX, fromY, toX, toY) {
             alert('Draw by Stalemate');
         }
 
+        playing = false;
+    }
+
+    if(lastMove.isCapture || lastMove.piece.type == 'pawn') {
+        halfMoves = 0;
+    } else {
+        halfMoves++;
+    }
+
+    // TODO: Add threefolod repetition and insuficient material
+    if(halfMoves >= 50) {
+        alert("Game drawn because of the 50 move rule");
+        lastMove.drawRule = true; 
         playing = false;
     }
 
@@ -783,7 +798,6 @@ function movePiece(fromX, fromY, toX, toY) {
         board[toY][toX] = board[fromY][fromX];
         board[fromY][fromX] = EM;
         renderScoresheet(lastMove, moveNumber);
-        moveNumber++;
     } else if(playing) {
         if(isInTurn(board[fromY][fromX].color) && isLegalMove(fromX, fromY, toX, toY, board[fromY][fromX].type, board[fromY][fromX].color, board)) {
             commitMove(fromX, fromY, toX, toY, board);
@@ -808,6 +822,7 @@ function init() {
     turn = 'white';
     playing = true;
     moveNumber = 0;
+    zhalfMoves = 0;
     whiteCanShortCastle = true, blackCanShortCastle = true;
     whiteCanLongCastle = true, blackCanLongCastle = true;
     lastMove = {
@@ -821,7 +836,8 @@ function init() {
         isLongCastle: false,
         isPromotion: false,
         isCheckMate: false,
-        isStaleMate: false
+        isStaleMate: false,
+        drawRule: false
     };
     whiteKingPos = {
         x: 4,
