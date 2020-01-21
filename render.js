@@ -7,8 +7,9 @@ const ctx = canvas.getContext('2d');
 const resetButton = document.getElementById('reset');
 const clearButton = document.getElementById('clear');
 
-const scoreSheet = document.getElementById('myTable')
-const infoTable = document.getElementById('info')
+const scoreSheet = document.getElementById('myTable');
+const infoTable = document.getElementById('info');
+const fenBox = document.getElementById('fenBox');
 
 let canDrag = false;
 let currentMove = {
@@ -332,6 +333,14 @@ function renderScoresheet(move, moveNumber) {
     }
 }
 
+function renderFenString() {
+    fenBox.innerHTML = "FEN: " + generateFen();
+}
+
+function clearFenString() {
+    fenBox.innerHTML = "FEN: ";
+}
+
 function resetScoresheet() {
     for(let counter = 0; counter < 60; ++counter) {
         i = Math.floor(counter / 2) % 20;
@@ -396,4 +405,5 @@ function activateSuperMode() {
 
 BRIcon.onload = function () {
     render();
+    renderFenString();
 }

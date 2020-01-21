@@ -72,6 +72,7 @@ function resetPosition() {
     init();
     resetScoresheet();
     resetPgn();
+    renderFenString();
     render();
 }
 
@@ -84,6 +85,7 @@ function clearPosition() {
 
     resetScoresheet();
     resetPgn();
+    clearFenString();
     render();
 }
 
@@ -116,32 +118,6 @@ function pseudoCommitMove(fromX, fromY, toX, toY, myBoard) {
     
     if(_isEnPassant) {
         myBoard[lastMove.toY][lastMove.toX] = EM;
-    }
-
-    if(turn == 'white') {
-        if(myBoard[fromY][fromX].type == 'pawn' && fromY - toY == 2){
-            epSquare = {
-                x: fromX,
-                y: toY + 1
-            };
-        } else {
-            epSquare = {
-                x: -1,
-                y: -1
-            };
-        }
-    } else {
-        if(myBoard[fromY][fromX].type == 'pawn' && toY - fromY == 2){
-            epSquare = {
-                x: fromX,
-                y: toY - 1
-            };
-        } else {
-            epSquare = {
-                x: -1,
-                y: -1
-            };
-        }
     }
 
     myBoard[toY][toX] = myBoard[fromY][fromX];  
@@ -195,7 +171,18 @@ function commitMove(fromX, fromY, toX, toY) {
         lastMove.isLongCastle = false;
     }
 
-    
+    if(board[fromY][fromX].type == 'pawn' && Math.abs(fromY - toY) == 2){
+        epSquare = {
+            x: fromX,
+            y: toY + (turn == 'white' ? 1 : -1)
+        };
+    } else {
+        epSquare = {
+            x: -1,
+            y: -1
+        };
+    }
+
     _isEnPassant = isEnPassant(fromX, fromY, toX, toY, color, board);
     _isPromotion = isPromotion(fromX, fromY, toX, toY, color, board);
     _isCapture = isCapture(fromX, fromY, toX, toY, board);
@@ -280,6 +267,7 @@ function commitMove(fromX, fromY, toX, toY) {
 
     renderScoresheet(lastMove, moveNumber);
     addToPgn(lastMove, moveNumber);
+    renderFenString();
 
     if(turn == 'black') {
         moveNumber++;
@@ -889,6 +877,7 @@ function movePiece(fromX, fromY, toX, toY) {
     if(superMode) {
         board[toY][toX] = board[fromY][fromX];
         board[fromY][fromX] = EM;
+        clearFenString();
         renderScoresheet(lastMove, moveNumber);
     } else if(playing) {
         if(isInTurn(board[fromY][fromX].color) && isLegalMove(fromX, fromY, toX, toY, board[fromY][fromX].type, board[fromY][fromX].color, board)) {

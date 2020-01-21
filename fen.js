@@ -78,7 +78,7 @@ function generateFen() {
         fen.enPassant += squareToAlgebraic[epSquare.y][epSquare.x];
     }
 
-    fen.fullMoveNumber = Math.floor(moveNumber / 2);
+    fen.fullMoveNumber = Math.floor(moveNumber);
     fen.halfmoveClock = halfMoves;
 
     return [fen.piecePlacement, fen.activeColor, fen.castlingFlags, fen.enPassant, fen.halfmoveClock, fen.fullMoveNumber].join(' ');
