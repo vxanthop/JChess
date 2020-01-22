@@ -22,6 +22,9 @@ let superMode = false;
 let moveNumber = 1;
 let halfMoves = 0;
 let board = [];
+let positions = {
+    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 1
+};
 let whiteCanShortCastle = true, blackCanShortCastle = true;
 let whiteCanLongCastle = true, blackCanLongCastle = true;
 let epSquare = {
@@ -250,7 +253,7 @@ function commitMove(fromX, fromY, toX, toY) {
         halfMoves++;
     }
 
-    if(halfMoves >= 50) {
+    if(halfMoves >= 100) {
         alert("Game drawn because of the 50 move rule");
         lastMove.drawRule = true; 
         playing = false;
@@ -262,10 +265,11 @@ function commitMove(fromX, fromY, toX, toY) {
         playing = false;
     }
 
-    // if(threefoldRepetition()) {
-    //     alert("Game drawn because of threefold repetition");
-    //     playing = false;
-    // }
+    if(threefoldRepetition()) {
+        alert("Game drawn because of threefold repetition");
+        lastMove.drawRule = true;
+        playing = false;
+    }
 
     renderScoresheet(lastMove, moveNumber);
     addToPgn(lastMove, moveNumber);
@@ -323,9 +327,16 @@ function insuficientMaterial() {
     return true;
 }
 
-// function threefoldRepetition() {
+function threefoldRepetition() {
+    let fen = generateFen()
+        .split(' ')
+        .slice(0, 4)
+        .join(' ');
 
-// }
+    positions[fen] = fen in positions ? positions[fen] + 1 : 1;
+
+    return positions[fen] >= 3
+}
 
 // Hacky way to figure out direction, must change
 function isBlocked(fromX, fromY, toX, toY, movement, myBoard) {
@@ -907,6 +918,9 @@ function init() {
     playing = true;
     moveNumber = 1;
     zhalfMoves = 0;
+    positions = {
+        "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 1
+    };
     whiteCanShortCastle = true, blackCanShortCastle = true;
     whiteCanLongCastle = true, blackCanLongCastle = true;
     lastMove = {
