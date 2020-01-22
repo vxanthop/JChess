@@ -139,14 +139,10 @@ function commitMove(fromX, fromY, toX, toY) {
         if (color == 'white'){
             board[7][7] = EM;
             board[7][5] = WR;
-            whiteCanShortCastle = false;
-            whiteCanLongCastle = false;
             lastMove.isShortCastle = true;
         } else {
             board[0][7] = EM;
             board[0][5] = BR;
-            blackCanShortCastle = false;
-            blackCanLongCastle = false;
             lastMove.isShortCastle = true;
         }    
     } else {
@@ -157,18 +153,24 @@ function commitMove(fromX, fromY, toX, toY) {
         if (color == 'white'){
             board[7][0] = EM;
             board[7][3] = WR;
-            whiteCanLongCastle = false;
-            whiteCanShortCastle = false;
             lastMove.isLongCastle = true;
         } else {
             board[0][0] = EM;
             board[0][3] = BR;
-            blackCanLongCastle = false;
-            blackCanShortCastle = false;
             lastMove.isLongCastle = true;
         }
     } else {
         lastMove.isLongCastle = false;
+    }
+
+    if(board[fromY][fromX].type == 'king') {
+        if(turn == 'white'){
+            whiteCanLongCastle = false;
+            whiteCanShortCastle = false;
+        } else {
+            blackCanLongCastle = false;
+            blackCanShortCastle = false;
+        }
     }
 
     if(board[fromY][fromX].type == 'pawn' && Math.abs(fromY - toY) == 2){

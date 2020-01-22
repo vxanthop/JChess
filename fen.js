@@ -64,12 +64,16 @@ function generateFen() {
         fen.castlingFlags += 'Q';
     }
 
-    if(whiteCanShortCastle) {
+    if(blackCanShortCastle) {
         fen.castlingFlags += 'k';
     }
 
-    if(whiteCanLongCastle) {
+    if(blackCanLongCastle) {
         fen.castlingFlags += 'q';
+    }
+
+    if(fen.castlingFlags == '') {
+        fen.castlingFlags = '-';
     }
 
     if(epSquare.x == -1 && epSquare.y == -1) {
