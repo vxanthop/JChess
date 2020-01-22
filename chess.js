@@ -269,13 +269,14 @@ function commitMove(fromX, fromY, toX, toY) {
 
     renderScoresheet(lastMove, moveNumber);
     addToPgn(lastMove, moveNumber);
-    renderFenString();
-
-    if(turn == 'black') {
-        moveNumber++;
-    }
+    
     
     turn = oppositeTurn(turn);
+    renderFenString();
+    
+    if(turn == 'white') {
+        moveNumber++;
+    }
 }
 
 function insuficientMaterial() {
