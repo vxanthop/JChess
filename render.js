@@ -11,6 +11,11 @@ const scoreSheet = document.getElementById('myTable');
 const infoTable = document.getElementById('info');
 const fenBox = document.getElementById('fenBox');
 
+const whiteClockElem = document.getElementById('white-clock');
+const blackClockElem = document.getElementById('black-clock');
+
+const zeroPad = (num, places) => String(num).padStart(places, '0')
+
 let canDrag = false;
 let currentMove = {
     fromX: 0,
@@ -331,6 +336,19 @@ function renderScoresheet(move, moveNumber) {
         infoTable.rows[1].cells[2].innerHTML = '1/2';
         infoTable.rows[2].cells[2].innerHTML = '1/2';
     }
+}
+
+function formatTime(clock) {
+    if(clock.total >= 10000) {
+        return zeroPad(clock.minutes, 2) + ":" + zeroPad(clock.seconds, 2);
+    } else {
+        return zeroPad(clock.minutes, 2) + ":" + zeroPad(clock.seconds, 2) + "." + Math.floor(clock.miliseconds / 10);
+    }
+}
+
+function renderClocks() {
+    whiteClockElem.innerHTML = formatTime(clockWhite);
+    blackClockElem.innerHTML = formatTime(clockBlack);
 }
 
 function renderFenString() {

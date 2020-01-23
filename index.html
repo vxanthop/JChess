@@ -5,6 +5,7 @@
         <title>Vilaras chess</title>
         <script src="chess.js" defer></script>
         <script src="render.js" defer></script>
+        <script src="clock.js" defer></script>
         <script src="controller.js" defer></script>
         <script src="pgn.js" defer></script>
         <script src="fen.js" defer></script>
@@ -16,12 +17,16 @@
             <div id="board">
                 <div type='text' id=fenBox value="FEN: "></div>
                 <canvas id="myCanvas" width='600' height='600'></canvas>
-                <button onclick="resetPosition()" id="reset"> Start </button>
-                <button onclick="clearPosition()" id="clear"> Clear </button>
-                <button onclick="makePgnFile()" id="pgn"> Pgn </button>
+                <button onclick="resetPosition()" id="reset">Start</button>
+                <button onclick="clearPosition()" id="clear">Clear</button>
+                <button onclick="makePgnFile()" id="pgn">Pgn</button>
             </div>
 
-            <button onclick="activateSuperMode()" id="big_red_button">SUPER MODE</button>
+            <!-- <button onclick="activateSuperMode()" id="big_red_button">SUPER MODE</button> -->
+            <div id="clocks">
+                <div id="black-clock"></div>
+                <div id="white-clock"></div>
+            </div>
 
             <div id="scoresheet">
                 

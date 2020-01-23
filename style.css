@@ -96,10 +96,16 @@ tr:nth-child(even) {
 #fenBox {
     width: 600px;
     height: 50px;
-    border-style: solid;
-    border-width: 2px;
+    border: black solid 2px;
     font-weight: bold;
     font-size: 18px;
     padding: 10px;
     margin: 10px;
+}
+
+#white-clock, #black-clock {
+    width: 100px;
+    height: 10px;
+    border: black solid 2px;
+    padding: 10px;
 }
