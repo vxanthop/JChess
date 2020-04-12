@@ -403,18 +403,18 @@ function render() {
 }
 
 function activateSuperMode() {
-    WPIcon.src = 'images/todo.png';
-    BPIcon.src = 'images/todo.png';
-    WNIcon.src = 'images/todo.png';
-    BNIcon.src = 'images/todo.png';
-    WBIcon.src = 'images/todo.png';
-    BBIcon.src = 'images/todo.png';
-    WQIcon.src = 'images/todo.png';
-    BQIcon.src = 'images/todo.png';
-    WKIcon.src = 'images/todo.png';
-    BKIcon.src = 'images/todo.png';
-    WRIcon.src = 'images/todo.png';
-    BRIcon.src = 'images/todo.png';    
+    WPIcon.src = 'images/blyet.png';
+    BPIcon.src = 'images/blyet.png';
+    WNIcon.src = 'images/blyet.png';
+    BNIcon.src = 'images/blyet.png';
+    WBIcon.src = 'images/blyet.png';
+    BBIcon.src = 'images/blyet.png';
+    WQIcon.src = 'images/blyet.png';
+    BQIcon.src = 'images/blyet.png';
+    WKIcon.src = 'images/blyet.png';
+    BKIcon.src = 'images/blyet.png';
+    WRIcon.src = 'images/blyet.png';
+    BRIcon.src = 'images/blyet.png';    
     alert("BOOOOOOOOOOOOOOOM");
     
     superMode = true;

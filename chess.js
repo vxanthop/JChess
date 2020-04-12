@@ -77,6 +77,7 @@ function resetPosition() {
     resetPgn();
     renderFenString();
     render();
+    initializeClocks(30000, 30000);
 }
 
 function clearPosition() {
