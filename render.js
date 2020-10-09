@@ -136,9 +136,9 @@ function renderSquare(x, y) {
 
     ctx.strokeStyle = 'black';
     if ((x + y) % 2){
-        ctx.fillStyle = '#994d00';
+        ctx.fillStyle = '#b58863;
     } else { 
-        ctx.fillStyle = '#ffe066';
+        ctx.fillStyle = '#f0d9b5';
     }
 
     ctx.fillRect(viewCoords.x, viewCoords.y, BLOCK_W, BLOCK_H);
