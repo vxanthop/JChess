@@ -1,0 +1,105 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body.super-mode {
+  background: radial-gradient(
+    circle at center,
+    hsl(0, 100%, 50%),
+    hsl(20, 100%, 50%),
+    hsl(40, 100%, 50%),
+    hsl(60, 100%, 50%),
+    hsl(80, 100%, 50%),
+    hsl(100, 100%, 50%),
+    hsl(120, 100%, 50%),
+    hsl(140, 100%, 50%),
+    hsl(160, 100%, 50%),
+    hsl(180, 100%, 50%),
+    hsl(200, 100%, 50%),
+    hsl(220, 100%, 50%),
+    hsl(240, 100%, 50%),
+    hsl(255, 100%, 50%)
+  );
+}
+
+.header {
+  background-color: #04b8bbc2;
+  color: #272932;
+  text-align: center;
+  font-size: 50px;
+  padding: 20px;
+}
+
+button {
+  background-color: #272932;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td,
+th {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+  background-color: #e9e3e3;
+}
+
+#player-text {
+  text-align: left;
+}
+
+.numbering {
+  font-weight: 900;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  padding: 10px;
+  overflow: hidden;
+}
+
+#big-red-button {
+  background-color: red;
+  color: black;
+  width: 300px;
+  height: 300px;
+  border-radius: 100%;
+  text-align: center;
+  text-decoration: none;
+  font-size: 50px;
+}
+
+#scoresheet {
+  width: 600px;
+  margin-right: 50px;
+  padding: 10px;
+}
+
+#my-canvas {
+  display: block;
+  margin: auto;
+  cursor: pointer;
+}
+
+#board {
+  margin-top: 50px;
+  margin-right: 100px;
+}

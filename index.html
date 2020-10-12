@@ -1,290 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Vilaras chess</title>
-        <script src="chess.js" defer></script>
-        <script src="render.js" defer></script>
-        <script src="controller.js" defer></script>
-        <script src="pgn.js" defer></script>
-        <script src="fen.js" defer></script>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <div class="wrapper">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vilaras JChess</title>
+    <script src="js/chess.js" defer></script>
+    <script src="js/render.js" defer></script>
+    <script src="js/controller.js" defer></script>
+    <script src="js/pgn.js" defer></script>
+    <script src="js/fen.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="header">Vilaras JChess</div>
+    <div class="wrapper">
+      <div id="board">
+        <canvas id="my-canvas" width="600" height="600"></canvas>
+        <button onclick="resetPosition()" id="reset">Start</button>
+        <button onclick="clearPosition()" id="clear">Clear</button>
+        <button onclick="makePgnFile()" id="pgn">Pgn</button>
+        <button onclick="renderFenString()" id="fen">Fen</button>
+      </div>
 
-            <div id="board">
-                <div type='text' id=fenBox value="FEN: "></div>
-                <canvas id="myCanvas" width='600' height='600'></canvas>
-                <button onclick="resetPosition()" id="reset"> Start </button>
-                <button onclick="clearPosition()" id="clear"> Clear </button>
-                <button onclick="makePgnFile()" id="pgn"> Pgn </button>
-            </div>
+      <!-- <button onclick="activateSuperMode()" id="big-red-button">SUPER MODE</button> -->
 
-            <button onclick="activateSuperMode()" id="big_red_button">SUPER MODE</button>
-
-            <div id="scoresheet">
-                
-                <table id="info">
-                    <caption>Scoresheet</caption>
-                    <tr>
-                        <th>Name</th>
-                        <th>Rating</th>
-                        <th>Result</th>
-                    </tr>
-                    <tr>
-                        <td id="player">
-                            <div class="white-box"></div>
-                            <div class=player-text>Vilaras</div>
-                        </td>
-                        <td id="Elo">1000</td>
-                        <td id="result"></td>
-                    </tr>
-                    <tr>
-                        <td id="player">
-                            <div class="black-box"></div>
-                            <div class=player-text>Vilaras</div>
-                        </td>
-                        <td id="rating">1000</td>
-                        <td id="result"></td>
-                    </tr>
-                </table>
-
-                <table id="myTable">
-                    <tr>
-                        <th>No</th>
-                        <th>White</th>
-                        <th>Black</th>
-                        <th>No</th>
-                        <th>White</th>
-                        <th>Black</th>
-                        <th>No</th>
-                        <th>White</th>
-                        <th>Black</th>
-                    </tr>
-                    <tr>
-                        <td class="numbering">1</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">21</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">41</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">2</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">22</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">42</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">3</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">23</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">43</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">4</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">24</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">44</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">5</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">25</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">45</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">6</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">26</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">46</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">7</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">27</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">47</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">8</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">28</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">48</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">9</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">29</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">49</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">10</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">30</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">50</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">11</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">31</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">51</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">12</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">32</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">52</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">13</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">33</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">53</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">14</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">34</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">54</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">15</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">35</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">55</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">16</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">36</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">56</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">17</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">37</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">57</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">18</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">38</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">58</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">19</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">39</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">59</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td class="numbering">20</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">40</td>
-                        <td></td>
-                        <td></td>
-                        <td class="numbering">60</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </table>
-            </div>
-
-        </div>
-</body>
+      <div id="scoresheet">
+        <table id="my-table">
+          <tr>
+            <th></th>
+            <th>White</th>
+            <th>Black</th>
+            <th></th>
+            <th>White</th>
+            <th>Black</th>
+            <th></th>
+            <th>White</th>
+            <th>Black</th>
+          </tr>
+          <tr>
+            <td class="numbering">1</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">21</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">41</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">2</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">22</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">42</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">3</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">23</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">43</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">4</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">24</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">44</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">5</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">25</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">45</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">6</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">26</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">46</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">7</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">27</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">47</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">8</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">28</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">48</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">9</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">29</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">49</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">10</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">30</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">50</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">11</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">31</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">51</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">12</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">32</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">52</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">13</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">33</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">53</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">14</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">34</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">54</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">15</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">35</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">55</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">16</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">36</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">56</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">17</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">37</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">57</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">18</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">38</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">58</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">19</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">39</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">59</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="numbering">20</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">40</td>
+            <td></td>
+            <td></td>
+            <td class="numbering">60</td>
+            <td></td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </body>
 </html>
