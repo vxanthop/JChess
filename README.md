@@ -1,6 +1,5 @@
 # JChess
-A basic chess game to get familiar with JS.
+
+A chess game created with HTML5, CSS and vanilla JS. If you are very curious you may find an easter egg inside.
 
 ![](./images/chess.png)
-
-Created with HTML5, CSS and vanilla JS (needs some work on styling)
