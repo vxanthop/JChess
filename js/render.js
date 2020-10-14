@@ -30,18 +30,18 @@ const WPIcon = new Image(),
   WRIcon = new Image(),
   BRIcon = new Image();
 
-WPIcon.src = "images/Chess_plt45.svg";
-BPIcon.src = "images/Chess_pdt45.svg";
-WNIcon.src = "images/Chess_nlt45.svg";
-BNIcon.src = "images/Chess_ndt45.svg";
-WBIcon.src = "images/Chess_blt45.svg";
-BBIcon.src = "images/Chess_bdt45.svg";
-WQIcon.src = "images/Chess_qlt45.svg";
-BQIcon.src = "images/Chess_qdt45.svg";
-WKIcon.src = "images/Chess_klt45.svg";
-BKIcon.src = "images/Chess_kdt45.svg";
-WRIcon.src = "images/Chess_rlt45.svg";
-BRIcon.src = "images/Chess_rdt45.svg";
+WPIcon.src = "../images/Chess_plt45.svg";
+BPIcon.src = "../images/Chess_pdt45.svg";
+WNIcon.src = "../images/Chess_nlt45.svg";
+BNIcon.src = "../images/Chess_ndt45.svg";
+WBIcon.src = "../images/Chess_blt45.svg";
+BBIcon.src = "../images/Chess_bdt45.svg";
+WQIcon.src = "../images/Chess_qlt45.svg";
+BQIcon.src = "../images/Chess_qdt45.svg";
+WKIcon.src = "../images/Chess_klt45.svg";
+BKIcon.src = "../images/Chess_kdt45.svg";
+WRIcon.src = "../images/Chess_rlt45.svg";
+BRIcon.src = "../images/Chess_rdt45.svg";
 
 const iconSelector = {
   whitepawn: WPIcon,
@@ -162,17 +162,6 @@ function renderBlock(x, y) {
   if (board[y][x] != EM) {
     renderPiece(x, y);
   }
-}
-
-function mouseDown(x, y) {
-  modelCoords = viewToModel(x, y);
-  currentMove.fromX = modelCoords.x;
-  currentMove.fromY = modelCoords.y;
-
-  canDrag = true;
-  canvas.onmousemove = mouseMove;
-
-  lastIcon = selectIcon(modelCoords.x, modelCoords.y);
 }
 
 function sameDestination(move1) {
@@ -382,6 +371,18 @@ function mouseUp(x, y) {
     currentMove.toX,
     currentMove.toY
   );
+  render();
+}
+
+function mouseDown(x, y) {
+  modelCoords = viewToModel(x, y);
+  currentMove.fromX = modelCoords.x;
+  currentMove.fromY = modelCoords.y;
+
+  canDrag = true;
+  canvas.onmousemove = mouseMove;
+
+  lastIcon = selectIcon(modelCoords.x, modelCoords.y);
 }
 
 function render() {
@@ -393,18 +394,18 @@ function render() {
 }
 
 function activateSuperMode() {
-  WPIcon.src = "images/todo.png";
-  BPIcon.src = "images/todo.png";
-  WNIcon.src = "images/todo.png";
-  BNIcon.src = "images/todo.png";
-  WBIcon.src = "images/todo.png";
-  BBIcon.src = "images/todo.png";
-  WQIcon.src = "images/todo.png";
-  BQIcon.src = "images/todo.png";
-  WKIcon.src = "images/todo.png";
-  BKIcon.src = "images/todo.png";
-  WRIcon.src = "images/todo.png";
-  BRIcon.src = "images/todo.png";
+  WPIcon.src = "../images/todo.png";
+  BPIcon.src = "../images/todo.png";
+  WNIcon.src = "../images/todo.png";
+  BNIcon.src = "../images/todo.png";
+  WBIcon.src = "../images/todo.png";
+  BBIcon.src = "../images/todo.png";
+  WQIcon.src = "../images/todo.png";
+  BQIcon.src = "../images/todo.png";
+  WKIcon.src = "../images/todo.png";
+  BKIcon.src = "../images/todo.png";
+  WRIcon.src = "../images/todo.png";
+  BRIcon.src = "../images/todo.png";
   alert("BOOOOOOOOOOOOOOOM");
 
   superMode = true;

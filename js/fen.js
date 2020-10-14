@@ -1,91 +1,97 @@
 let fen = {
-    piecePLacement: '',
-    activeColor: '',
-    castlingFlags: '',
-    enPassant: '',
-    halfmoveClock: '',
-    fullMoveNumber: ''
+  piecePLacement: "",
+  activeColor: "",
+  castlingFlags: "",
+  enPassant: "",
+  halfmoveClock: "",
+  fullMoveNumber: "",
 };
 
-//uses board, castling flags, halfmoves and 
+//uses board, castling flags, halfmoves and
 function generateFen() {
-    let empty, rowString;
-    fen = {
-        piecePlacement: '',
-        activeColor: '',
-        castlingFlags: '',
-        enPassant: '',
-        halfmoveClock: '',
-        fullMoveNumber: ''
-    };
+  let empty, rowString;
+  fen = {
+    piecePlacement: "",
+    activeColor: "",
+    castlingFlags: "",
+    enPassant: "",
+    halfmoveClock: "",
+    fullMoveNumber: "",
+  };
 
-
-    for(let y = 0; y < ROWS; y++) {
-        rowString = '';
-        empty = 0;
-        for(let x = 0; x < COLS; x++) {
-            if(board[y][x] == EM) {
-                empty++;
-            } else {
-                if(empty > 0) {
-                    rowString += empty;
-                    empty = 0;
-                }
-
-                let color = board[y][x].color,
-                    type = board[y][x].type;
-                
-                let c = 'P';
-                if(type != 'pawn') {
-                    c = pieceToAlgebraic[type];
-                }
-
-                rowString += color == 'white' ? c : c.toLowerCase();
-            }
+  for (let y = 0; y < ROWS; y++) {
+    rowString = "";
+    empty = 0;
+    for (let x = 0; x < COLS; x++) {
+      if (board[y][x] == EM) {
+        empty++;
+      } else {
+        if (empty > 0) {
+          rowString += empty;
+          empty = 0;
         }
 
-        if(empty > 0) {
-            rowString += empty;
+        let color = board[y][x].color,
+          type = board[y][x].type;
+
+        let c = "P";
+        if (type != "pawn") {
+          c = pieceToAlgebraic[type];
         }
 
-        fen.piecePlacement += rowString; 
-        if(y != 7) { 
-            fen.piecePlacement += '/';
-        }
+        rowString += color == "white" ? c : c.toLowerCase();
+      }
     }
 
-    fen.activeColor = turn.charAt(0);
-
-    if(whiteCanShortCastle) {
-        fen.castlingFlags += 'K';
+    if (empty > 0) {
+      rowString += empty;
     }
 
-    if(whiteCanLongCastle) {
-        fen.castlingFlags += 'Q';
+    fen.piecePlacement += rowString;
+    if (y != 7) {
+      fen.piecePlacement += "/";
     }
+  }
 
-    if(blackCanShortCastle) {
-        fen.castlingFlags += 'k';
-    }
+  fen.activeColor = oppositeTurn(turn).charAt(0);
 
-    if(blackCanLongCastle) {
-        fen.castlingFlags += 'q';
-    }
+  if (whiteCanShortCastle) {
+    fen.castlingFlags += "K";
+  }
 
-    if(fen.castlingFlags == '') {
-        fen.castlingFlags = '-';
-    }
+  if (whiteCanLongCastle) {
+    fen.castlingFlags += "Q";
+  }
 
-    if(epSquare.x == -1 && epSquare.y == -1) {
-        fen.enPassant = '-';
-    } else {
-        fen.enPassant += squareToAlgebraic[epSquare.y][epSquare.x];
-    }
+  if (blackCanShortCastle) {
+    fen.castlingFlags += "k";
+  }
 
-    fen.fullMoveNumber = Math.floor(moveNumber);
-    fen.halfmoveClock = halfMoves;
+  if (blackCanLongCastle) {
+    fen.castlingFlags += "q";
+  }
 
-    return [fen.piecePlacement, fen.activeColor, fen.castlingFlags, fen.enPassant, fen.halfmoveClock, fen.fullMoveNumber].join(' ');
+  if (fen.castlingFlags == "") {
+    fen.castlingFlags = "-";
+  }
+
+  if (epSquare.x == -1 && epSquare.y == -1) {
+    fen.enPassant = "-";
+  } else {
+    fen.enPassant += squareToAlgebraic[epSquare.y][epSquare.x];
+  }
+
+  fen.fullMoveNumber = Math.floor(moveNumber);
+  fen.halfmoveClock = halfMoves;
+
+  return [
+    fen.piecePlacement,
+    fen.activeColor,
+    fen.castlingFlags,
+    fen.enPassant,
+    fen.halfmoveClock,
+    fen.fullMoveNumber,
+  ].join(" ");
 }
 
 // function importFen() {
