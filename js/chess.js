@@ -1079,7 +1079,7 @@ function init() {
   turn = "white";
   playing = true;
   moveNumber = 1;
-  zhalfMoves = 0;
+  halfMoves = 0;
   positions = {
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -": 1,
   };
