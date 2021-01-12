@@ -338,11 +338,12 @@ function renderFenString() {
 }
 
 function resetScoresheet() {
-  for (let counter = 0; counter < 60; ++counter) {
-    i = Math.floor(counter / 2) % 20;
-    j = Math.floor(counter % 2) + 3 * Math.floor(counter / 40);
+  for (let moveNumber = 1; moveNumber <= 60; ++moveNumber) {
+    i = ((moveNumber - 1) % 20) + 1;
+    j = 3 * Math.floor((moveNumber - 1) / 20) + 1;
 
-    scoreSheet.rows[i + 1].cells[j + 1].innerHTML = "";
+    scoreSheet.rows[i].cells[j].innerHTML = "";
+    scoreSheet.rows[i].cells[j + 1].innerHTML = "";
   }
 }
 
