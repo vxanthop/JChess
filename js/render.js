@@ -30,18 +30,18 @@ const WPIcon = new Image(),
   WRIcon = new Image(),
   BRIcon = new Image();
 
-WPIcon.src = "../images/Chess_plt45.svg";
-BPIcon.src = "../images/Chess_pdt45.svg";
-WNIcon.src = "../images/Chess_nlt45.svg";
-BNIcon.src = "../images/Chess_ndt45.svg";
-WBIcon.src = "../images/Chess_blt45.svg";
-BBIcon.src = "../images/Chess_bdt45.svg";
-WQIcon.src = "../images/Chess_qlt45.svg";
-BQIcon.src = "../images/Chess_qdt45.svg";
-WKIcon.src = "../images/Chess_klt45.svg";
-BKIcon.src = "../images/Chess_kdt45.svg";
-WRIcon.src = "../images/Chess_rlt45.svg";
-BRIcon.src = "../images/Chess_rdt45.svg";
+WPIcon.src = "images/Chess_plt45.svg";
+BPIcon.src = "images/Chess_pdt45.svg";
+WNIcon.src = "images/Chess_nlt45.svg";
+BNIcon.src = "images/Chess_ndt45.svg";
+WBIcon.src = "images/Chess_blt45.svg";
+BBIcon.src = "images/Chess_bdt45.svg";
+WQIcon.src = "images/Chess_qlt45.svg";
+BQIcon.src = "images/Chess_qdt45.svg";
+WKIcon.src = "images/Chess_klt45.svg";
+BKIcon.src = "images/Chess_kdt45.svg";
+WRIcon.src = "images/Chess_rlt45.svg";
+BRIcon.src = "images/Chess_rdt45.svg";
 
 const iconSelector = {
   whitepawn: WPIcon,
